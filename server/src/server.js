@@ -1,12 +1,26 @@
 import express from 'express';
 
+import env from './config/environment.js';
+import { connectDB, getDB } from './config/db.js';
+
 const app = express();
-const PORT = 8000;
 
-app.get('/', (req, res) => {
-  res.send('<h1>Hello World 123!</h1>');
-});
+const startServer = () => {
+  app.get('/', (req, res) => {
+    res.send(`<h1>Hello World!</h1>`);
+  });
 
-app.listen(PORT, () => {
-  console.log(`Server is running at http://localhost:${PORT}`);
-});
+  app.listen(env.APP_PORT, () => {
+    console.log(`Connected to MongoDB and server is running at: http://localhost:${env.APP_PORT}`);
+  });
+};
+
+connectDB()
+  .then(() => getDB())
+  .then(() => {
+    startServer();
+  })
+  .catch((error) => {
+    console.log(error);
+    process.exit(0);
+  });
