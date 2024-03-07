@@ -1,4 +1,6 @@
 import express from 'express'
+import boardValidation from '#src/validations/boardValidation.js'
+import boardController from '#src/controllers/boardController.js'
 
 const router = express.Router()
 
@@ -12,9 +14,7 @@ router.get('/', (req, res) => {
 // METHOD: POST
 // ENDPOINT: /api/boards
 // DESCRIPTION: Create a new board
-router.post('/', (req, res) => {
-  res.status(201).json({ message: 'Create a new board' })
-})
+router.post('/', boardValidation.createNew, boardController.createNew)
 
 // METHOD: PUT
 // ENDPOINT: /api/boards/:id

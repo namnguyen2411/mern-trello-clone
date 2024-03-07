@@ -1,9 +1,9 @@
 /* eslint-disable no-console */
 import express from 'express'
-
 import env from './config/environment.js'
 import { connectDB, getDB } from './config/db.js'
 import apiRoutes from './routes/index.js'
+import errorHandling from './middlewares/errorHandling.js'
 
 const app = express()
 
@@ -15,6 +15,8 @@ const startServer = () => {
   })
 
   app.use('/api', apiRoutes)
+
+  app.use(errorHandling)
 
   app.listen(env.APP_PORT, () => {
     console.info(`Connected to MongoDB and server is running at: http://localhost:${env.APP_PORT}`)
