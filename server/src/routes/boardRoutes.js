@@ -16,6 +16,11 @@ router.get('/', (req, res) => {
 // DESCRIPTION: Create a new board
 router.post('/', boardValidation.createNew, boardController.createNew)
 
+// METHOD: GET
+// ENDPOINT: /api/boards/:id
+// DESCRIPTION: Get a board
+router.get('/:id', boardController.getDetails)
+
 // METHOD: PUT
 // ENDPOINT: /api/boards/:id
 // DESCRIPTION: Update a board
