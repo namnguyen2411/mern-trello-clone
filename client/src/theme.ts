@@ -30,7 +30,7 @@ declare module '@mui/material/styles' {
 export const theme = extendTheme({
   trello: {
     headerHeight: 58,
-    boardBarHeight: 60,
+    boardBarHeight: 50,
     boardContentHeight: (theme: ThemeType) =>
       `calc(100vh - ${theme.trello.headerHeight}px - ${theme.trello.boardBarHeight}px)`,
     cardBgLight: '#dadada',

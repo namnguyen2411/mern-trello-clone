@@ -1,3 +1,7 @@
-export default function App() {
-  return <div>Hello World</div>
+import Board from './pages/Board'
+
+function App() {
+  return <Board />
 }
+
+export default App
