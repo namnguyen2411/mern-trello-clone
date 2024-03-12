@@ -1,20 +1,13 @@
-import { Container } from '@mui/material'
-
-import Header from 'src/components/Header'
 import BoardBar from './components/BoardBar'
+import BoardContent from './components/BoardContent'
+
+export const BOARD_PADDING_TOP = '4px'
 
 export default function Board() {
   return (
-    <Container
-      disableGutters
-      maxWidth={false}
-      sx={{
-        height: '100vh',
-        paddingTop: 0.5
-      }}
-    >
-      <Header />
+    <>
       <BoardBar />
-    </Container>
+      <BoardContent />
+    </>
   )
 }
