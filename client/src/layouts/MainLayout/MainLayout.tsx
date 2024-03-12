@@ -2,8 +2,6 @@ import { Container } from '@mui/material'
 import { Outlet } from 'react-router-dom'
 import Header from 'src/components/Header'
 
-export const MAIN_LAYOUT_PADDING_TOP = '4px'
-
 export default function Board() {
   return (
     <Container
@@ -11,7 +9,7 @@ export default function Board() {
       maxWidth={false}
       sx={{
         height: '100vh',
-        paddingTop: MAIN_LAYOUT_PADDING_TOP
+        paddingTop: (theme) => theme.trello.MAIN_LAYOUT_PADDING_TOP
       }}
     >
       <Header />

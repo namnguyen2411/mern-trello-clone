@@ -1,50 +1,59 @@
-import { CssVarsTheme, Theme, experimental_extendTheme as extendTheme } from '@mui/material/styles'
-
-type ThemeType = Omit<Theme, 'palette' | 'applyStyles'> & CssVarsTheme
+import { experimental_extendTheme as extendTheme } from '@mui/material/styles'
 
 declare module '@mui/material/styles' {
-  interface ThemeOptions {
-    trello: {
-      headerHeight: number
-      boardBarHeight: number
-      boardContentHeight: (theme: ThemeType) => string
-      cardBgLight: string
-      cardBgDark: string
-      columnHeaderHeight: number
-      columnFooterHeight: number
-    }
-  }
   interface Theme {
     trello: {
+      MAIN_LAYOUT_PADDING_TOP: string
       headerHeight: number
       boardBarHeight: number
-      boardContentHeight: (theme: ThemeType) => string
-      cardBgLight: string
-      cardBgDark: string
+      columnWidth: number
       columnHeaderHeight: number
-      columnFooterHeight: number
+      addNewColumnWidth: number
     }
+  }
+  interface ThemeOptions {
+    trello: {
+      MAIN_LAYOUT_PADDING_TOP: string
+      headerHeight: number
+      boardBarHeight: number
+      columnWidth: number
+      columnHeaderHeight: number
+      addNewColumnWidth: number
+    }
+  }
+  interface Palette {
+    boardContentBg: string
+    cardBg: string
+  }
+
+  interface PaletteOptions {
+    boardContentBg: string
+    cardBg: string
   }
 }
 
 export const theme = extendTheme({
   trello: {
+    MAIN_LAYOUT_PADDING_TOP: '4px',
     headerHeight: 58,
     boardBarHeight: 50,
-    boardContentHeight: (theme: ThemeType) =>
-      `calc(100vh - ${theme.trello.headerHeight}px - ${theme.trello.boardBarHeight}px)`,
-    cardBgLight: '#dadada',
-    cardBgDark: '#333643',
-    columnHeaderHeight: 50,
-    columnFooterHeight: 56
+    columnWidth: 300,
+    columnHeaderHeight: 46,
+    addNewColumnWidth: 250
   },
 
   colorSchemes: {
     light: {
-      palette: {}
+      palette: {
+        boardContentBg: '#1976d2',
+        cardBg: '#dadada'
+      }
     },
     dark: {
-      palette: {}
+      palette: {
+        boardContentBg: '#34495e',
+        cardBg: '#333643'
+      }
     }
   }
 })
