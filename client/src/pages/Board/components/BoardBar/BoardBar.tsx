@@ -2,9 +2,10 @@ import { useState, MouseEvent } from 'react'
 import { Public, Lock } from '@mui/icons-material'
 import { StackProps, Stack, Chip, Tooltip, Box, Menu, MenuItem, ListItemIcon, Button } from '@mui/material'
 
-// type BoardBarProps = {
-//   board: BoardType | null
-// }
+type BoardBarProps = {
+  boardTitle: string
+  boardType: 'public' | 'private'
+}
 
 type Props = { name?: string } & StackProps
 const STACK_SX_PROPS: Props = {
@@ -24,7 +25,7 @@ const CHIP_SX_PROPS = {
   }
 }
 
-export default function BoardBar() {
+export default function BoardBar({ boardTitle: title, boardType: type }: BoardBarProps) {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
   const [boardType, setboardType] = useState<'public' | 'private'>('public')
   const open = Boolean(anchorEl)
@@ -52,7 +53,7 @@ export default function BoardBar() {
     >
       {/* Board title */}
       <Tooltip title={'Change title'}>
-        <Chip sx={{ ...CHIP_SX_PROPS, fontWeight: 'bold', fontSize: '1rem' }} label={'MERN Trello Clone'} clickable />
+        <Chip sx={{ ...CHIP_SX_PROPS, fontWeight: 'bold', fontSize: '1rem' }} label={title} clickable />
       </Tooltip>
       {/* Board type */}
       <Box>
@@ -68,7 +69,7 @@ export default function BoardBar() {
               <Chip
                 sx={{ ...CHIP_SX_PROPS, textTransform: 'capitalize' }}
                 icon={boardType === 'public' ? <Public fontSize='small' /> : <Lock fontSize='small' />}
-                label={boardType}
+                label={type}
               />
             }
           </Button>

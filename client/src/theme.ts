@@ -55,5 +55,21 @@ export const theme = extendTheme({
         cardBg: '#333643'
       }
     }
+  },
+  components: {
+    MuiCssBaseline: {
+      styleOverrides: {
+        body: {
+          '*::-webkit-scrollbar': {
+            width: '6px',
+            height: '6px'
+          },
+          '*::-webkit-scrollbar-thumb': {
+            backgroundColor: '#bdc3c7',
+            borderRadius: '3px'
+          }
+        }
+      }
+    }
   }
 })
