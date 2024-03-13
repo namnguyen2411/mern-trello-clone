@@ -1,4 +1,4 @@
-import Stack from '@mui/material/Stack'
+import Box from '@mui/material/Box'
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable'
 import Card from '../Card'
 import { CardType } from 'src/types/card.type'
@@ -10,18 +10,20 @@ type CardListProps = {
 export default function CardList({ cards }: CardListProps) {
   return (
     <SortableContext items={cards.map((card) => card._id)} strategy={verticalListSortingStrategy}>
-      <Stack
-        flexDirection={'column'}
-        gap={1}
-        mx={'5px'}
-        padding={'0 5px 5px 5px'}
-        overflow={'hidden auto'}
-        maxHeight={(theme) =>
-          `calc(100vh - ${theme.trello.headerHeight}px - ${theme.trello.boardBarHeight}px - ${theme.spacing(8)})`
-        }
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 1,
+          p: '0 5px 5px 5px',
+          mx: '5px',
+          overflow: 'hidden auto',
+          maxHeight: (theme) =>
+            `calc(100vh - ${theme.trello.headerHeight} - ${theme.trello.boardBarHeight} - ${theme.trello.columnHeaderHeight})`
+        }}
       >
         {cards?.map((card) => <Card key={card._id} card={card} />)}
-      </Stack>
+      </Box>
     </SortableContext>
   )
 }

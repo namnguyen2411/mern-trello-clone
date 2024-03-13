@@ -84,8 +84,7 @@ export default function Column({ column }: ColumnProps) {
           ml: 2,
           borderRadius: '6px',
           height: 'fit-content',
-          maxHeight: (theme) =>
-            `calc(100vh - ${theme.trello.headerHeight}px - ${theme.trello.boardBarHeight}px - ${theme.spacing(8)})`
+          maxHeight: (theme) => `calc(100vh - ${theme.trello.headerHeight}px - ${theme.trello.boardBarHeight}px)`
         }}
       >
         {/* Column Header */}
@@ -168,7 +167,6 @@ export default function Column({ column }: ColumnProps) {
         {/* Column Footer */}
         <Box
           sx={{
-            // height: (theme) => theme.trello.columnFooterHeight,
             height: 'fit-content',
             padding: '8px 12px'
           }}
@@ -182,11 +180,19 @@ export default function Column({ column }: ColumnProps) {
                 justifyContent: 'space-between'
               }}
             >
-              <Button startIcon={<AddCard />} onClick={toggleAddNewCardHandler}>
+              <Button
+                startIcon={<AddCard />}
+                onClick={toggleAddNewCardHandler}
+                sx={{
+                  ':hover': {
+                    bgcolor: (theme) => theme.palette.grey[theme.palette.mode === 'light' ? 400 : 700]
+                  }
+                }}
+              >
                 Add new card
               </Button>
               <Tooltip title='Drag to move'>
-                <DragHandle cursor={'drag'} />
+                <DragHandle cursor={'grab'} />
               </Tooltip>
             </Box>
           )}
@@ -222,7 +228,6 @@ export default function Column({ column }: ColumnProps) {
                   size='small'
                   onClick={handleAddNewCard}
                   sx={{
-                    border: '1px solid',
                     '&:hover': {
                       bgcolor: 'primary'
                     }
