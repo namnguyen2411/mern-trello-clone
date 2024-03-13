@@ -6,11 +6,14 @@ import {
   DragStartEvent,
   MouseSensor,
   TouchSensor,
+  closestCorners,
   defaultDropAnimationSideEffects,
   useSensor,
   useSensors
 } from '@dnd-kit/core'
-import { Stack } from '@mui/material'
+import { arrayMove } from '@dnd-kit/sortable'
+import cloneDeep from 'lodash/cloneDeep'
+import { Box } from '@mui/material'
 import ColumnList from './components/ColumnList'
 import { BoardType } from 'src/types/board.type'
 import { ColumnType } from 'src/types/column.type'
@@ -18,7 +21,6 @@ import { CardType } from 'src/types/card.type'
 import { mapOrder } from 'src/utils/sort'
 import Column from './components/Column'
 import Card from './components/Card'
-import { arrayMove } from '@dnd-kit/sortable'
 
 type BoardProps = {
   board: BoardType
@@ -81,14 +83,36 @@ export default function BoardContent({ board }: BoardProps) {
 
   const handleDragEnd = (e: DragEndEvent) => {
     const { active, over } = e
-
     if (!active || !over || active.id === over.id) return
 
     if (draggingItem.type === 'card') {
-      //
+      const {
+        id: activeId,
+        data: { current: activeData }
+      } = active
+      const {
+        id: overId,
+        data: { current: overData }
+      } = over
+
+      // drag-drop card to another column
+
+      // drag-drop card in the same column
+      if ((activeData as CardType).columnId === (overData as CardType).columnId) {
+        setOrderedColumns((prev) => {
+          const cloneColumns: ColumnType[] = cloneDeep(prev)
+
+          const targetColumn = cloneColumns.find((col) => col._id === (activeData as CardType).columnId) as ColumnType
+          const oldIndex = targetColumn.cards.findIndex((card) => card._id === activeId) as number
+          const newIndex = targetColumn.cards.findIndex((card) => card._id === overId) as number
+          targetColumn.cards = arrayMove(targetColumn.cards, oldIndex, newIndex)
+          targetColumn.cardOrderIds = targetColumn.cards.map((card) => card._id)
+
+          return cloneColumns
+        })
+      }
     }
 
-    // console.log(active.id, over.id)
     if (draggingItem.type === 'column') {
       const oldIndex = orderedColumns.findIndex((col) => col._id === active.id)
       const newIndex = orderedColumns.findIndex((col) => col._id === over.id)
@@ -103,11 +127,15 @@ export default function BoardContent({ board }: BoardProps) {
   }
 
   return (
-    <DndContext sensors={sensors} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
-      <Stack
-        flexDirection={'row'}
+    <DndContext
+      sensors={sensors}
+      onDragStart={handleDragStart}
+      onDragEnd={handleDragEnd}
+      collisionDetection={closestCorners}
+    >
+      <Box
         paddingBlock={'10px'}
-        height={(theme) =>
+        minHeight={(theme) =>
           `calc(100vh - ${theme.trello.headerHeight}px - ${theme.trello.boardBarHeight}px - ${theme.trello.MAIN_LAYOUT_PADDING_TOP})`
         }
         bgcolor={(theme) => theme.palette.boardContentBg}
@@ -121,7 +149,7 @@ export default function BoardContent({ board }: BoardProps) {
             <Card card={draggingItem.data as CardType} />
           )}
         </DragOverlay>
-      </Stack>
+      </Box>
     </DndContext>
   )
 }
