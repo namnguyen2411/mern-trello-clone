@@ -108,7 +108,6 @@ export default function ColumnList({ columns }: ColumnListProps) {
                 size='small'
                 onClick={handleAddNewColumn}
                 sx={{
-                  border: '1px solid',
                   '&:hover': {
                     bgcolor: 'primary'
                   }
