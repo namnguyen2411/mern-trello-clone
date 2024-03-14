@@ -29,15 +29,24 @@ export default function Card({ card }: CardProps) {
       style={dndKitCardStyle}
       {...attributes}
       {...listeners}
-      sx={{
-        cursor: 'pointer',
-        overflow: 'unset',
-        boxShadow: '0 1px 1px rgba(0, 0, 0, 0.2)',
-        border: '2px solid transparent',
-        '&:hover': {
-          borderColor: 'primary.main'
-        }
-      }}
+      sx={
+        card.FE_placeHolderCard
+          ? {
+              cursor: 'default',
+              height: '1px',
+              border: 'none',
+              bgcolor: (theme) => theme.palette.cardBg
+            }
+          : {
+              cursor: 'pointer',
+              overflow: 'unset',
+              boxShadow: '0 1px 1px rgba(0, 0, 0, 0.2)',
+              border: '2px solid transparent',
+              '&:hover': {
+                borderColor: 'primary.main'
+              }
+            }
+      }
     >
       {card.cover && (
         <CardMedia

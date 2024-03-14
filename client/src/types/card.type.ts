@@ -8,4 +8,5 @@ export type CardType = {
   title: string
   cover: string | null
   description: string | null
+  FE_placeHolderCard?: boolean
 }

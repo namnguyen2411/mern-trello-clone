@@ -24,6 +24,7 @@ import { CardType } from 'src/types/card.type'
 import { mapOrder } from 'src/utils/sort'
 import Column from './components/Column'
 import Card from './components/Card'
+import { generatePlaceholderCard } from 'src/utils/generatePlaceholderCard'
 
 type BoardProps = {
   board: BoardType
@@ -75,41 +76,44 @@ export default function BoardContent({ board }: BoardProps) {
     setOrderedColumns(latestOrderedCols)
   }, [board])
 
+  const findColumnByCardId = (cardId: string) => {
+    return orderedColumns.find((col) => col?.cards.some((card) => card._id === cardId))
+  }
+
   const dragCardToAnotherColumn = (
+    activeColumn: ColumnType,
+    overColumn: ColumnType,
     activeId: string,
     overId: string,
     active: Active,
     over: Over,
-    activeData: CardType,
-    overData: CardType
+    activeData: CardType
   ) => {
     setOrderedColumns(() => {
-      const overCardIndex = (orderedColumns.find((col) => col._id === overData.columnId) as ColumnType).cards.findIndex(
-        (card) => card._id === overId
-      )
+      const overCardIndex = overColumn.cards.findIndex((card) => card._id === overId) as number
 
       // copy from dnd kit github
       // tính toán index mới cho activeCard sắp đc thả (trên hay dưới so với overCard)
       const isBelowOverItem =
         active.rect.current.translated && active.rect.current.translated.top > over.rect.top + over.rect.height
       const modifier = isBelowOverItem ? 1 : 0
-      const newIndex =
-        overCardIndex >= 0
-          ? overCardIndex + modifier
-          : (orderedColumns.find((col) => col._id === overData.columnId) as ColumnType).cards.length + 1
+      const newIndex = overCardIndex >= 0 ? overCardIndex + modifier : activeColumn.cards.length + 1
 
       const cloneColumns: ColumnType[] = cloneDeep(orderedColumns)
       const oldColumn = cloneColumns.find((col) => col._id === activeData.columnId) as ColumnType
-      const newColumn = cloneColumns.find((col) => col._id === overData.columnId) as ColumnType
+      const newColumn = cloneColumns.find((col) => col._id === overColumn._id) as ColumnType
 
       // remove activeCard from oldColumn
       oldColumn.cards = oldColumn.cards.filter((card) => card._id !== activeId)
+      // push placeholderCard (an empty card) into oldColumn if oldColumn is empty
+      if (oldColumn.cards.length === 0) oldColumn.cards.push(generatePlaceholderCard(oldColumn))
       oldColumn.cardOrderIds = oldColumn.cardOrderIds.filter((id) => id !== activeId)
 
       // check if activeCard is already in newColumn, if yes, remove it
-      newColumn.cards = newColumn.cards.filter((card) => card._id !== activeId)
+      // or if it's a placeholder card, remove it
+      newColumn.cards = newColumn.cards.filter((card) => card._id !== activeId && !card.FE_placeHolderCard)
       // update activeCard columnId to newColumn id
-      activeData.columnId = overData.columnId
+      activeData.columnId = newColumn._id
       // insert activeCard into newColumn
       newColumn.cards.splice(newIndex, 0, activeData)
       newColumn.cardOrderIds.splice(newIndex, 0, activeData._id)
@@ -133,6 +137,7 @@ export default function BoardContent({ board }: BoardProps) {
     // drap-drop column works fine so just return
     if (draggingItem.type === 'column' || !over || !active) return
 
+    // drag-drop card to another column
     const {
       id: activeId,
       data: { current: activeData }
@@ -142,15 +147,20 @@ export default function BoardContent({ board }: BoardProps) {
       data: { current: overData }
     } = over
 
-    // drag-drop card to another column
+    const activeColumn = findColumnByCardId(activeId as string)
+    const overColumn = findColumnByCardId(overId as string)
+
+    if (!activeColumn || !overColumn) return
+
     if ((activeData as CardType).columnId !== (overData as CardType).columnId) {
       dragCardToAnotherColumn(
+        activeColumn,
+        overColumn,
         activeId as string,
         overId as string,
         active,
         over,
-        activeData as CardType,
-        overData as CardType
+        activeData as CardType
       )
     }
   }
@@ -169,15 +179,21 @@ export default function BoardContent({ board }: BoardProps) {
         data: { current: overData }
       } = over
 
+      const activeColumn = findColumnByCardId(activeId as string)
+      const overColumn = findColumnByCardId(overId as string)
+
+      if (!activeColumn || !overColumn) return
+
       // drag-drop card to another column
       if ((activeData as CardType).columnId !== (overData as CardType).columnId) {
         dragCardToAnotherColumn(
+          activeColumn,
+          overColumn,
           activeId as string,
           overId as string,
           active,
           over,
-          activeData as CardType,
-          overData as CardType
+          activeData as CardType
         )
       }
       // drag-drop card in the same column
