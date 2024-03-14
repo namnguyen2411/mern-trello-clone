@@ -1,19 +1,25 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import {
   Active,
+  Collision,
+  CollisionDetection,
   DndContext,
   DragEndEvent,
   DragOverEvent,
   DragOverlay,
   DragStartEvent,
-  MouseSensor,
+  DroppableContainer,
+  // MouseSensor,
   Over,
-  TouchSensor,
+  // TouchSensor,
   closestCorners,
   defaultDropAnimationSideEffects,
+  getFirstCollision,
+  pointerWithin,
   useSensor,
   useSensors
 } from '@dnd-kit/core'
+import { MouseSensor, TouchSensor } from 'src/customLibs/dndKitSensor'
 import { arrayMove } from '@dnd-kit/sortable'
 import cloneDeep from 'lodash/cloneDeep'
 import { Box } from '@mui/material'
@@ -70,6 +76,39 @@ export default function BoardContent({ board }: BoardProps) {
     }
   })
   const sensors = useSensors(mouseSensors, touchSensors)
+  // Card flickering when center of draggable at the equal distance between other draggables
+  // https://github.com/clauderic/dnd-kit/issues/1128#issuecomment-1671336452
+  const lastOverId = useRef<string | null>(null)
+  const customCollisionDetection = useCallback(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (args: any) => {
+      if (draggingItem.type === 'column') return closestCorners({ ...args })
+
+      // tìm các điểm giao nhau va chạm với con trỏ
+      const pointerIntersection: Collision[] = pointerWithin(args)
+      // nếu kéo ra khỏi khung hình hoặc các khu vực ko có card hay column thì ko làm gì nữa
+      if (!pointerIntersection.length) return
+
+      let overId = getFirstCollision(pointerIntersection, 'id')
+      // nếu overId là column thì sẽ dùng closestCenter để tìm cardId gần nhất trong khu vực va chạm
+      if (overId) {
+        const checkColumn = orderedColumns.find((col) => col._id === overId)
+        if (checkColumn) {
+          overId = closestCorners({
+            ...args,
+            droppableContainers: args.droppableContainers.filter(
+              (container: DroppableContainer) =>
+                container.id !== overId && checkColumn?.cardOrderIds.includes(container.id as string)
+            )
+          })[0]?.id
+        }
+        lastOverId.current = overId as string
+        return [{ id: overId }]
+      }
+      return lastOverId.current ? [{ id: lastOverId.current }] : []
+    },
+    [draggingItem, orderedColumns]
+  )
 
   useEffect(() => {
     const latestOrderedCols = mapOrder(board?.columns, board?.columnOrderIds, '_id')
@@ -231,7 +270,7 @@ export default function BoardContent({ board }: BoardProps) {
       onDragStart={handleDragStart}
       onDragOver={handleDragOver}
       onDragEnd={handleDragEnd}
-      collisionDetection={closestCorners}
+      collisionDetection={customCollisionDetection as CollisionDetection}
     >
       <Box
         paddingBlock={'10px'}

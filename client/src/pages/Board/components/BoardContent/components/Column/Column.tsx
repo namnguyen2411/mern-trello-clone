@@ -199,6 +199,7 @@ export default function Column({ column }: ColumnProps) {
 
           {openAddNewCard && (
             <Box
+              // Block DnD event propagation
               data-no-dnd='true'
               sx={{
                 borderRadius: '6px',
