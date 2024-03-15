@@ -1,5 +1,7 @@
 /* eslint-disable no-console */
 import express from 'express'
+import cors from 'cors'
+import corsOptions from './config/cors.js'
 import env from './config/environment.js'
 import { connectDB, getDB } from './config/db.js'
 import apiRoutes from './routes/index.js'
@@ -9,6 +11,7 @@ const app = express()
 
 const startServer = () => {
   app.use(express.json())
+  app.use(cors(corsOptions))
 
   app.get('/', (req, res) => {
     res.send(`<h1>Hello World!</h1>`)
