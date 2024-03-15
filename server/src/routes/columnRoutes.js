@@ -1,20 +1,13 @@
 import express from 'express'
+import columnValidation from '#src/validations/columnValidation.js'
+import columnController from '#src/controllers/columnController.js'
 
 const router = express.Router()
-
-// METHOD: GET
-// ENDPOINT: /api/columns
-// DESCRIPTION: Get all columns
-router.get('/', (req, res) => {
-  res.status(200).json({ message: 'Get all columns' })
-})
 
 // METHOD: POST
 // ENDPOINT: /api/columns
 // DESCRIPTION: Create a new column
-router.post('/', (req, res) => {
-  res.status(201).json({ message: 'Create a new column' })
-})
+router.post('/', columnValidation.createNew, columnController.createNew)
 
 // METHOD: PUT
 // ENDPOINT: /api/columns/:id
