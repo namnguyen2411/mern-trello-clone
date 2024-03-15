@@ -1,5 +1,6 @@
 import { useState, MouseEvent } from 'react'
 import { useSortable } from '@dnd-kit/sortable'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { CSS } from '@dnd-kit/utilities'
 import { ExpandMore, AddCard, ContentCut, DeleteForever, Cloud, DragHandle, Close } from '@mui/icons-material'
 import {
@@ -17,6 +18,7 @@ import {
 import { ColumnType } from 'src/types/column.type'
 import CardList from '../CardList'
 import { mapOrder } from 'src/utils/sort'
+import cardAPI from 'src/apis/card.api'
 
 type ColumnProps = {
   column: ColumnType
@@ -27,6 +29,14 @@ export default function Column({ column }: ColumnProps) {
   const [cardTitle, setCardTitle] = useState('')
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
   const open = Boolean(anchorEl)
+
+  const queryClient = useQueryClient()
+  const addCardMutation = useMutation({
+    mutationFn: cardAPI.createNewCard,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['board', column.boardId] })
+    }
+  })
 
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: column._id,
@@ -56,7 +66,11 @@ export default function Column({ column }: ColumnProps) {
   const handleAddNewCard = () => {
     if (!cardTitle) return
 
-    // gọi api để thêm Card
+    addCardMutation.mutate({
+      title: cardTitle,
+      columnId: column._id,
+      boardId: column.boardId
+    })
 
     toggleAddNewCardHandler()
   }

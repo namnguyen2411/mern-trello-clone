@@ -120,7 +120,6 @@ export default function BoardContent({ board }: BoardProps) {
   }
 
   const dragCardToAnotherColumn = (
-    activeColumn: ColumnType,
     overColumn: ColumnType,
     activeId: string,
     overId: string,
@@ -136,7 +135,7 @@ export default function BoardContent({ board }: BoardProps) {
       const isBelowOverItem =
         active.rect.current.translated && active.rect.current.translated.top > over.rect.top + over.rect.height
       const modifier = isBelowOverItem ? 1 : 0
-      const newIndex = overCardIndex >= 0 ? overCardIndex + modifier : activeColumn.cards.length + 1
+      const newIndex = overCardIndex >= 0 ? overCardIndex + modifier : overColumn.cards.length + 1
 
       const cloneColumns: ColumnType[] = cloneDeep(orderedColumns)
       const oldColumn = cloneColumns.find((col) => col._id === activeData.columnId) as ColumnType
@@ -146,7 +145,7 @@ export default function BoardContent({ board }: BoardProps) {
       oldColumn.cards = oldColumn.cards.filter((card) => card._id !== activeId)
       // push placeholderCard (an empty card) into oldColumn if oldColumn is empty
       if (oldColumn.cards.length === 0) oldColumn.cards.push(generatePlaceholderCard(oldColumn))
-      oldColumn.cardOrderIds = oldColumn.cardOrderIds.filter((id) => id !== activeId)
+      oldColumn.cardOrderIds = oldColumn.cards.map((card) => card._id)
 
       // check if activeCard is already in newColumn, if yes, remove it
       // or if it's a placeholder card, remove it
@@ -155,7 +154,7 @@ export default function BoardContent({ board }: BoardProps) {
       activeData.columnId = newColumn._id
       // insert activeCard into newColumn
       newColumn.cards.splice(newIndex, 0, activeData)
-      newColumn.cardOrderIds.splice(newIndex, 0, activeData._id)
+      newColumn.cardOrderIds = newColumn.cards.map((card) => card._id)
 
       return cloneColumns
     })
@@ -192,15 +191,7 @@ export default function BoardContent({ board }: BoardProps) {
     if (!activeColumn || !overColumn) return
 
     if ((activeData as CardType).columnId !== (overData as CardType).columnId) {
-      dragCardToAnotherColumn(
-        activeColumn,
-        overColumn,
-        activeId as string,
-        overId as string,
-        active,
-        over,
-        activeData as CardType
-      )
+      dragCardToAnotherColumn(overColumn, activeId as string, overId as string, active, over, activeData as CardType)
     }
   }
 
@@ -225,15 +216,7 @@ export default function BoardContent({ board }: BoardProps) {
 
       // drag-drop card to another column
       if ((activeData as CardType).columnId !== (overData as CardType).columnId) {
-        dragCardToAnotherColumn(
-          activeColumn,
-          overColumn,
-          activeId as string,
-          overId as string,
-          active,
-          over,
-          activeData as CardType
-        )
+        dragCardToAnotherColumn(overColumn, activeId as string, overId as string, active, over, activeData as CardType)
       }
       // drag-drop card in the same column
       else {
@@ -268,13 +251,13 @@ export default function BoardContent({ board }: BoardProps) {
     <DndContext
       sensors={sensors}
       onDragStart={handleDragStart}
+      collisionDetection={customCollisionDetection as CollisionDetection}
       onDragOver={handleDragOver}
       onDragEnd={handleDragEnd}
-      collisionDetection={customCollisionDetection as CollisionDetection}
     >
       <Box
         paddingBlock={'10px'}
-        minHeight={(theme) =>
+        height={(theme) =>
           `calc(100vh - ${theme.trello.headerHeight}px - ${theme.trello.boardBarHeight}px - ${theme.trello.MAIN_LAYOUT_PADDING_TOP})`
         }
         bgcolor={(theme) => theme.palette.boardContentBg}
