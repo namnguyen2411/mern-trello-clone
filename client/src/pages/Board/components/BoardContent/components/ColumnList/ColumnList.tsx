@@ -1,17 +1,28 @@
 import { useState } from 'react'
 import { SortableContext, horizontalListSortingStrategy } from '@dnd-kit/sortable'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { NoteAdd, Close } from '@mui/icons-material'
 import { Box, Button, TextField } from '@mui/material'
 import { ColumnType } from 'src/types/column.type'
 import Column from '../Column'
+import columnAPI from 'src/apis/column.api'
 
 type ColumnListProps = {
   columns: ColumnType[]
+  boardId: string
 }
 
-export default function ColumnList({ columns }: ColumnListProps) {
+export default function ColumnList({ columns, boardId }: ColumnListProps) {
   const [openAddNewColumn, setOpenAddNewColumn] = useState(false)
   const [columnTitle, setColumnTitle] = useState('')
+  const queryClient = useQueryClient()
+
+  const addColumnMutation = useMutation({
+    mutationFn: columnAPI.createNewColumn,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['board', boardId] })
+    }
+  })
 
   const toggleAddNewColumnHandler = () => {
     setOpenAddNewColumn(!openAddNewColumn)
@@ -25,7 +36,10 @@ export default function ColumnList({ columns }: ColumnListProps) {
   const handleAddNewColumn = () => {
     if (!columnTitle) return
 
-    // gọi api để thêm column
+    addColumnMutation.mutate({
+      boardId,
+      title: columnTitle
+    })
 
     toggleAddNewColumnHandler()
   }
