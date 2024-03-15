@@ -1,20 +1,13 @@
 import express from 'express'
+import cardValidation from '#src/validations/cardValidation.js'
+import cardController from '#src/controllers/cardController.js'
 
 const router = express.Router()
-
-// METHOD: GET
-// ENDPOINT: /api/cards
-// DESCRIPTION: Get all cards
-router.get('/', (req, res) => {
-  res.status(200).json({ message: 'Get all cards' })
-})
 
 // METHOD: POST
 // ENDPOINT: /api/cards
 // DESCRIPTION: Create a new card
-router.post('/', (req, res) => {
-  res.status(201).json({ message: 'Create a new card' })
-})
+router.post('/', cardValidation.createNew, cardController.createNew)
 
 // METHOD: PUT
 // ENDPOINT: /api/cards/:id

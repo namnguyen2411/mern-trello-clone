@@ -19,7 +19,13 @@ const createNew = async (data) => {
   try {
     const newCard = await CARD_SCHEMA.validateAsync(data, { abortEarly: false })
 
-    return await getDB().collection(CARD_COLLECTION_NAME).insertOne(newCard)
+    return await getDB()
+      .collection(CARD_COLLECTION_NAME)
+      .insertOne({
+        ...newCard,
+        boardId: new ObjectId(newCard.boardId),
+        columnId: new ObjectId(newCard.columnId)
+      })
   } catch (error) {
     throw new Error(error)
   }
