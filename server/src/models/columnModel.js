@@ -3,6 +3,8 @@ import { ObjectId } from 'mongodb'
 import { MONGODB_OBJECT_ID_RULE } from '#src/utils/constants.js'
 import { getDB } from '#src/config/db.js'
 
+const INVALID_UPDATE_FIELDS = ['_id', 'boardId', 'createdAt']
+
 const COLUMN_COLLECTION_NAME = 'columns'
 const COLUMN_SCHEMA = Joi.object({
   boardId: Joi.string().required().pattern(MONGODB_OBJECT_ID_RULE.rule).message(MONGODB_OBJECT_ID_RULE.message),
@@ -47,7 +49,29 @@ const pushToCardOrderIds = async (card) => {
         { $push: { cardOrderIds: new ObjectId(card._id) } },
         { returnDocument: 'after' }
       )
-    return result.value
+    return result
+  } catch (error) {
+    throw new Error(error)
+  }
+}
+
+const update = async (id, data) => {
+  try {
+    // remove invalid fields from data
+    Object.keys(data).forEach((fieldName) => {
+      if (INVALID_UPDATE_FIELDS.includes(fieldName)) {
+        delete data[fieldName]
+      }
+    })
+
+    const result = await getDB()
+      .collection(COLUMN_COLLECTION_NAME)
+      .findOneAndUpdate(
+        { _id: new ObjectId(id) },
+        { $set: { ...data, updatedAt: Date.now() } },
+        { returnDocument: 'after' }
+      )
+    return result
   } catch (error) {
     throw new Error(error)
   }
@@ -58,7 +82,8 @@ const columnModel = {
   COLUMN_SCHEMA,
   createNew,
   findOneById,
-  pushToCardOrderIds
+  pushToCardOrderIds,
+  update
 }
 
 export default columnModel

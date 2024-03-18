@@ -12,9 +12,7 @@ router.post('/', columnValidation.createNew, columnController.createNew)
 // METHOD: PUT
 // ENDPOINT: /api/columns/:id
 // DESCRIPTION: Update a column
-router.put('/:id', (req, res) => {
-  res.status(200).json({ message: 'Update a column' })
-})
+router.put('/:id', columnValidation.update, columnController.update)
 
 // METHOD: DELETE
 // ENDPOINT: /api/columns/:id

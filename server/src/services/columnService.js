@@ -1,7 +1,7 @@
 import columnModel from '#src/models/columnModel.js'
 import boardModel from '#src/models/boardModel.js'
 
-export const createNew = async (data) => {
+const createNew = async (data) => {
   const newColumnId = await columnModel.createNew(data)
   const newColumn = await columnModel.findOneById(newColumnId.insertedId)
 
@@ -12,9 +12,13 @@ export const createNew = async (data) => {
 
   return newColumn
 }
+const update = async (id, data) => {
+  return await columnModel.update(id, data)
+}
 
 const columnService = {
-  createNew
+  createNew,
+  update
 }
 
 export default columnService
