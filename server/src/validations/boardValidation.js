@@ -17,8 +17,24 @@ const createNew = async (req, res, next) => {
   }
 }
 
+const update = async (req, res, next) => {
+  const schema = Joi.object({
+    title: Joi.string().min(3).max(50).trim().strict(),
+    type: Joi.string().valid(BOARD_TYPE.public, BOARD_TYPE.private)
+  })
+
+  try {
+    // allowUnknown is used to allow extra fields in the request body that are not defined in the schema
+    await schema.validateAsync(req.body, { abortEarly: false, allowUnknown: true })
+    next()
+  } catch (error) {
+    next(new ApiError(StatusCodes.UNPROCESSABLE_ENTITY, new Error(error).message))
+  }
+}
+
 const boardValidation = {
-  createNew
+  createNew,
+  update
 }
 
 export default boardValidation

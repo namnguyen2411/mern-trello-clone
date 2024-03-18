@@ -28,6 +28,8 @@ const createNew = async (data) => {
   }
 }
 
+const INVALID_UPDATE_FIELDS = ['_id', 'createdAt']
+
 const findOneById = async (id) => {
   const result = await getDB()
     .collection(BOARD_COLLECTION_NAME)
@@ -60,7 +62,28 @@ const pushToColumnOrderIds = async (column) => {
         { $push: { columnOrderIds: new ObjectId(column._id) } },
         { returnDocument: 'after' }
       )
-    return result.value
+    return result
+  } catch (error) {
+    throw new Error(error)
+  }
+}
+
+const update = async (id, data) => {
+  try {
+    // remove invalid fields from data
+    Object.keys(data).forEach((fieldName) => {
+      if (INVALID_UPDATE_FIELDS.includes(fieldName)) {
+        delete data[fieldName]
+      }
+    })
+
+    return await getDB()
+      .collection(BOARD_COLLECTION_NAME)
+      .findOneAndUpdate(
+        { _id: new ObjectId(id) },
+        { $set: { ...data, updatedAt: Date.now() } },
+        { returnDocument: 'after' }
+      )
   } catch (error) {
     throw new Error(error)
   }
@@ -71,7 +94,8 @@ const boardModel = {
   createNew,
   findOneById,
   getDetails,
-  pushToColumnOrderIds
+  pushToColumnOrderIds,
+  update
 }
 
 export default boardModel

@@ -24,9 +24,7 @@ router.get('/:id', boardController.getDetails)
 // METHOD: PUT
 // ENDPOINT: /api/boards/:id
 // DESCRIPTION: Update a board
-router.put('/:id', (req, res) => {
-  res.status(200).json({ message: 'Update a board' })
-})
+router.put('/:id', boardValidation.update, boardController.update)
 
 // METHOD: DELETE
 // ENDPOINT: /api/boards/:id
