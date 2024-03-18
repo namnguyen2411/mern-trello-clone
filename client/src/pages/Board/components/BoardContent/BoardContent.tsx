@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import {
   Active,
   Collision,
@@ -31,6 +32,7 @@ import { mapOrder } from 'src/utils/sort'
 import Column from './components/Column'
 import Card from './components/Card'
 import { generatePlaceholderCard } from 'src/utils/generatePlaceholderCard'
+import boardAPI from 'src/apis/board.api'
 
 type BoardProps = {
   board: BoardType
@@ -58,6 +60,14 @@ export default function BoardContent({ board }: BoardProps) {
     id: '',
     type: undefined,
     data: undefined
+  })
+
+  const queryClient = useQueryClient()
+  const dragColumnMutation = useMutation({
+    mutationFn: boardAPI.updateBoard,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['board', board._id] })
+    }
   })
 
   // https://docs.dndkit.com/api-documentation/sensors
@@ -237,7 +247,13 @@ export default function BoardContent({ board }: BoardProps) {
     if (draggingItem.type === 'column') {
       const oldIndex = orderedColumns.findIndex((col) => col._id === active.id)
       const newIndex = orderedColumns.findIndex((col) => col._id === over.id)
-      setOrderedColumns(arrayMove(orderedColumns, oldIndex, newIndex))
+      const newOrderedColumns = arrayMove(orderedColumns, oldIndex, newIndex)
+      setOrderedColumns(newOrderedColumns)
+
+      dragColumnMutation.mutate({
+        _id: board._id,
+        columnOrderIds: newOrderedColumns.map((col) => col._id)
+      })
     }
 
     setDraggingItem({
