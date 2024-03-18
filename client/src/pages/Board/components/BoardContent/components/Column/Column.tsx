@@ -2,35 +2,31 @@ import { useState, MouseEvent } from 'react'
 import { useSortable } from '@dnd-kit/sortable'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { CSS } from '@dnd-kit/utilities'
-import { ExpandMore, AddCard, ContentCut, DeleteForever, Cloud, DragHandle, Close } from '@mui/icons-material'
-import {
-  Box,
-  Typography,
-  Tooltip,
-  Menu,
-  MenuItem,
-  ListItemIcon,
-  ListItemText,
-  Divider,
-  Button,
-  TextField
-} from '@mui/material'
+import { ExpandMore, AddCard, DragHandle, Close } from '@mui/icons-material'
+import { Box, Typography, Tooltip, Menu, MenuItem, ListItemText, Divider, Button, TextField } from '@mui/material'
 import { ColumnType } from 'src/types/column.type'
 import CardList from '../CardList'
-import { mapOrder } from 'src/utils/sort'
 import cardAPI from 'src/apis/card.api'
+import columnAPI from 'src/apis/column.api'
 
 type ColumnProps = {
   column: ColumnType
 }
 
 export default function Column({ column }: ColumnProps) {
+  const [openEditColumnTitle, setOpenEditColumnTitle] = useState(false)
+  const [columnTitle, setColumnTitle] = useState(column.title)
   const [openAddNewCard, setOpenAddNewCard] = useState(false)
   const [cardTitle, setCardTitle] = useState('')
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
   const open = Boolean(anchorEl)
 
   const queryClient = useQueryClient()
+
+  const editColumnTitleMutation = useMutation({
+    mutationFn: columnAPI.updateColumn
+  })
+
   const addCardMutation = useMutation({
     mutationFn: cardAPI.createNewCard,
     onSuccess: () => {
@@ -52,6 +48,19 @@ export default function Column({ column }: ColumnProps) {
     touchAction: 'none',
     height: '100%',
     opacity: isDragging ? 0.5 : 1
+  }
+
+  const toggleEditColumnTitleHandler = () => {
+    setOpenEditColumnTitle(!openEditColumnTitle)
+  }
+
+  const handleColumnTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setColumnTitle(e.target.value)
+  }
+
+  const handleSubmitColumnTitle = () => {
+    editColumnTitleMutation.mutate({ _id: column._id, title: columnTitle })
+    toggleEditColumnTitleHandler()
   }
 
   const toggleAddNewCardHandler = () => {
@@ -82,8 +91,6 @@ export default function Column({ column }: ColumnProps) {
     setAnchorEl(null)
   }
 
-  const orderCards = mapOrder(column.cards, column.cardOrderIds, '_id')
-
   return (
     // Phải bọc div ở đây vì vấn đề chiều cao của col khi kéo thả dẫn đến lỗi kiểu flickering,
     // khi kéo col ngắn vào vị trí col dài hơn thì phải kéo vòng thấp xuống chứ ko thể kéo qua ngang
@@ -112,16 +119,31 @@ export default function Column({ column }: ColumnProps) {
           }}
         >
           {/* Column Title */}
-          <Typography
-            sx={{
-              fontSize: '1rem',
-              fontWeight: 'bold',
-              cursor: 'pointer'
-            }}
-            variant='h6'
-          >
-            {column.title}
-          </Typography>
+          {/* Toggle edit column title */}
+          {!openEditColumnTitle && (
+            <Typography
+              sx={{
+                fontSize: '1rem',
+                fontWeight: 'bold',
+                cursor: 'pointer'
+              }}
+              variant='h6'
+              onClick={toggleEditColumnTitleHandler}
+            >
+              {columnTitle}
+            </Typography>
+          )}
+
+          {openEditColumnTitle && (
+            <TextField
+              autoFocus
+              variant='standard'
+              size='small'
+              value={columnTitle}
+              onChange={handleColumnTitleChange}
+              onBlur={handleSubmitColumnTitle}
+            />
+          )}
           {/* Column Header Dropdown */}
           <Box>
             <Tooltip title='More options'>
@@ -147,28 +169,13 @@ export default function Column({ column }: ColumnProps) {
               }}
             >
               <MenuItem>
-                <ListItemIcon>
-                  <AddCard fontSize='small' />
-                </ListItemIcon>
                 <ListItemText>Add new card</ListItemText>
               </MenuItem>
               <MenuItem>
-                <ListItemIcon>
-                  <ContentCut fontSize='small' />
-                </ListItemIcon>
                 <ListItemText>Cut</ListItemText>
               </MenuItem>
               <Divider />
               <MenuItem>
-                <ListItemIcon>
-                  <DeleteForever fontSize='small' />
-                </ListItemIcon>
-                <ListItemText>Remove this column</ListItemText>
-              </MenuItem>
-              <MenuItem>
-                <ListItemIcon>
-                  <Cloud fontSize='small' />
-                </ListItemIcon>
                 <ListItemText>Archive this column</ListItemText>
               </MenuItem>
             </Menu>
@@ -176,7 +183,7 @@ export default function Column({ column }: ColumnProps) {
         </Box>
 
         {/* Column Cards */}
-        <CardList cards={orderCards} />
+        <CardList cards={column.cards} />
 
         {/* Column Footer */}
         <Box

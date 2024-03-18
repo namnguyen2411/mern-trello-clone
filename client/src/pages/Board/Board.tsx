@@ -3,6 +3,7 @@ import BoardBar from './components/BoardBar'
 import BoardContent from './components/BoardContent'
 import boardAPI from 'src/apis/board.api'
 import { generatePlaceholderCard } from 'src/utils/generatePlaceholderCard'
+import { mapOrder } from 'src/utils/sort'
 
 const boardId = '65eaf36047cb08791e8d6345'
 
@@ -18,6 +19,8 @@ export default function Board() {
     if (col.cards.length === 0) {
       col.cards.push(generatePlaceholderCard(col))
       col.cardOrderIds = col.cards.map((card) => card._id)
+    } else {
+      col.cards = mapOrder(col.cards, col.cardOrderIds, '_id')
     }
   })
 

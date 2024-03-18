@@ -33,6 +33,7 @@ import Column from './components/Column'
 import Card from './components/Card'
 import { generatePlaceholderCard } from 'src/utils/generatePlaceholderCard'
 import boardAPI from 'src/apis/board.api'
+import columnAPI from 'src/apis/column.api'
 
 type BoardProps = {
   board: BoardType
@@ -68,6 +69,9 @@ export default function BoardContent({ board }: BoardProps) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['board', board._id] })
     }
+  })
+  const dragCardInTheSameColMutation = useMutation({
+    mutationFn: columnAPI.updateColumn
   })
 
   // https://docs.dndkit.com/api-documentation/sensors
@@ -121,7 +125,7 @@ export default function BoardContent({ board }: BoardProps) {
   )
 
   useEffect(() => {
-    const latestOrderedCols = mapOrder(board?.columns, board?.columnOrderIds, '_id')
+    const latestOrderedCols = mapOrder(board.columns, board.columnOrderIds, '_id')
     setOrderedColumns(latestOrderedCols)
   }, [board])
 
@@ -230,16 +234,19 @@ export default function BoardContent({ board }: BoardProps) {
       }
       // drag-drop card in the same column
       else {
-        setOrderedColumns(() => {
-          const cloneColumns: ColumnType[] = cloneDeep(orderedColumns)
+        const cloneColumns: ColumnType[] = cloneDeep(orderedColumns)
+        const targetColumn = cloneColumns.find((col) => col._id === (activeData as CardType).columnId) as ColumnType
+        const oldIndex = targetColumn.cards.findIndex((card) => card._id === activeId) as number
+        const newIndex = targetColumn.cards.findIndex((card) => card._id === overId) as number
+        targetColumn.cards = arrayMove(targetColumn.cards, oldIndex, newIndex)
+        targetColumn.cardOrderIds = targetColumn.cards.map((card) => card._id)
 
-          const targetColumn = cloneColumns.find((col) => col._id === (activeData as CardType).columnId) as ColumnType
-          const oldIndex = targetColumn.cards.findIndex((card) => card._id === activeId) as number
-          const newIndex = targetColumn.cards.findIndex((card) => card._id === overId) as number
-          targetColumn.cards = arrayMove(targetColumn.cards, oldIndex, newIndex)
-          targetColumn.cardOrderIds = targetColumn.cards.map((card) => card._id)
+        setOrderedColumns(cloneColumns)
 
-          return cloneColumns
+        dragCardInTheSameColMutation.mutate({
+          _id: targetColumn._id,
+          cards: targetColumn.cards,
+          cardOrderIds: targetColumn.cardOrderIds
         })
       }
     }
