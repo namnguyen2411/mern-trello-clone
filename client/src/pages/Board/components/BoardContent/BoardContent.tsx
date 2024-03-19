@@ -66,8 +66,14 @@ export default function BoardContent({ board }: BoardProps) {
   const queryClient = useQueryClient()
   const dragColumnMutation = useMutation({
     mutationFn: boardAPI.updateBoard,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['board', board._id] })
+    onSuccess: (data) => {
+      queryClient.setQueryData(['board', board._id], (oldData: BoardType) => {
+        if (!oldData) return oldData
+        return {
+          ...oldData,
+          columnOrderIds: data.columnOrderIds
+        }
+      })
     }
   })
   const dragCardInTheSameColMutation = useMutation({

@@ -8,7 +8,7 @@ const getBoardDetails = async (boardId: string) => {
   return respone.data
 }
 
-const updateBoard = async (data: updateBoardDataType) => http.put<BoardType>(`boards/${data._id}`, data)
+const updateBoard = async (data: updateBoardDataType) => (await http.put<BoardType>(`boards/${data._id}`, data)).data
 
 const deleteBoard = async (id: string) => await http.delete(`/boards/${id}`)
 
