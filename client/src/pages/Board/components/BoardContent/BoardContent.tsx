@@ -285,7 +285,7 @@ export default function BoardContent({ board }: BoardProps) {
         }
         bgcolor={(theme) => theme.palette.boardContentBg}
       >
-        <ColumnList columns={orderedColumns} boardId={board._id} />
+        <ColumnList columns={orderedColumns} boardId={board._id} setOrderedColumns={setOrderedColumns} />
 
         <DragOverlay dropAnimation={dropAnimation}>
           {draggingItem.id === '' ? null : draggingItem.type === 'column' ? (
