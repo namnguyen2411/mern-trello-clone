@@ -6,7 +6,7 @@ import ApiError from '#src/utils/ApiError.js'
 const createNew = async (req, res, next) => {
   const schema = Joi.object({
     boardId: Joi.string().required().pattern(MONGODB_OBJECT_ID_RULE.rule).message(MONGODB_OBJECT_ID_RULE.message),
-    title: Joi.string().required().min(3).max(50).trim().strict()
+    title: Joi.string().required().min(1).max(50).trim().strict()
   })
 
   try {
@@ -19,7 +19,7 @@ const createNew = async (req, res, next) => {
 
 const update = async (req, res, next) => {
   const schema = Joi.object({
-    title: Joi.string().min(3).max(50).trim().strict(),
+    title: Joi.string().min(1).max(50).trim().strict(),
     cardOrderIds: Joi.array().items(
       Joi.string().pattern(MONGODB_OBJECT_ID_RULE.rule).message(MONGODB_OBJECT_ID_RULE.message)
     )

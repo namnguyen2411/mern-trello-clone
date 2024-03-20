@@ -8,7 +8,7 @@ const INVALID_UPDATE_FIELDS = ['_id', 'boardId', 'createdAt']
 const COLUMN_COLLECTION_NAME = 'columns'
 const COLUMN_SCHEMA = Joi.object({
   boardId: Joi.string().required().pattern(MONGODB_OBJECT_ID_RULE.rule).message(MONGODB_OBJECT_ID_RULE.message),
-  title: Joi.string().required().min(3).max(50).trim().strict(),
+  title: Joi.string().required().min(1).max(50).trim().strict(),
   cardOrderIds: Joi.array()
     .items(Joi.string().pattern(MONGODB_OBJECT_ID_RULE.rule).message(MONGODB_OBJECT_ID_RULE.message))
     .default([]),

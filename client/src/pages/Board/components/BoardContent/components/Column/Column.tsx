@@ -23,8 +23,17 @@ export default function Column({ column }: ColumnProps) {
 
   const queryClient = useQueryClient()
 
-  const editColumnTitleMutation = useMutation({
-    mutationFn: columnAPI.updateColumn
+  const updateColumnTitleMutation = useMutation({
+    mutationFn: columnAPI.updateColumn,
+    onSuccess: () => {
+      queryClient.setQueryData(['board', column.boardId], (oldData: ColumnType) => {
+        if (!oldData) return oldData
+        return {
+          ...oldData,
+          title: columnTitle
+        }
+      })
+    }
   })
 
   const addCardMutation = useMutation({
@@ -50,17 +59,21 @@ export default function Column({ column }: ColumnProps) {
     opacity: isDragging ? 0.5 : 1
   }
 
-  const toggleEditColumnTitleHandler = () => {
-    setOpenEditColumnTitle(!openEditColumnTitle)
-  }
-
-  const handleColumnTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChangeColumnTitle = (e: React.ChangeEvent<HTMLInputElement>) => {
     setColumnTitle(e.target.value)
   }
 
   const handleSubmitColumnTitle = () => {
-    editColumnTitleMutation.mutate({ _id: column._id, title: columnTitle })
-    toggleEditColumnTitleHandler()
+    setColumnTitle(() => {
+      const trimmedColumnTitle = columnTitle.trim()
+      if (trimmedColumnTitle && trimmedColumnTitle !== column.title) {
+        updateColumnTitleMutation.mutate({ _id: column._id, title: trimmedColumnTitle })
+        return trimmedColumnTitle
+      }
+      return column.title
+    })
+
+    setOpenEditColumnTitle(!openEditColumnTitle)
   }
 
   const toggleAddNewCardHandler = () => {
@@ -68,7 +81,7 @@ export default function Column({ column }: ColumnProps) {
     setOpenAddNewCard(!openAddNewCard)
   }
 
-  const handleCardTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChangeCardTitle = (e: React.ChangeEvent<HTMLInputElement>) => {
     setCardTitle(e.target.value)
   }
 
@@ -128,7 +141,7 @@ export default function Column({ column }: ColumnProps) {
                 cursor: 'pointer'
               }}
               variant='h6'
-              onClick={toggleEditColumnTitleHandler}
+              onClick={() => setOpenEditColumnTitle(!openEditColumnTitle)}
             >
               {columnTitle}
             </Typography>
@@ -140,7 +153,7 @@ export default function Column({ column }: ColumnProps) {
               variant='standard'
               size='small'
               value={columnTitle}
-              onChange={handleColumnTitleChange}
+              onChange={handleChangeColumnTitle}
               onBlur={handleSubmitColumnTitle}
             />
           )}
@@ -176,7 +189,7 @@ export default function Column({ column }: ColumnProps) {
               </MenuItem>
               <Divider />
               <MenuItem>
-                <ListItemText>Archive this column</ListItemText>
+                <ListItemText>Remove this column</ListItemText>
               </MenuItem>
             </Menu>
           </Box>
@@ -239,7 +252,7 @@ export default function Column({ column }: ColumnProps) {
                 variant='outlined'
                 autoFocus
                 value={cardTitle}
-                onChange={handleCardTitleChange}
+                onChange={handleChangeCardTitle}
                 sx={{
                   width: '100%'
                 }}
