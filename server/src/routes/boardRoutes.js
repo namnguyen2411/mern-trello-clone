@@ -22,6 +22,11 @@ router.post('/', boardValidation.createNew, boardController.createNew)
 router.get('/:id', boardController.getDetails)
 
 // METHOD: PUT
+// ENDPOINT: /api/boards/dragging_card
+// DESCRIPTION: Update a board after dragging a card to another column
+router.put('/dragging_card', boardValidation.dragCardToAnotherColumn, boardController.dragCardToAnotherColumn)
+
+// METHOD: PUT
 // ENDPOINT: /api/boards/:id
 // DESCRIPTION: Update a board
 router.put('/:id', boardValidation.update, boardController.update)

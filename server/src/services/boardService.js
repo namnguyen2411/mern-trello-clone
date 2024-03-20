@@ -2,6 +2,8 @@ import { StatusCodes } from 'http-status-codes'
 import cloneDeep from 'lodash/clonedeep.js'
 import { slugify } from '#src/utils/formatter.js'
 import boardModel from '#src/models/boardModel.js'
+import columnModel from '#src/models/columnModel.js'
+import cardModel from '#src/models/cardModel.js'
 import ApiError from '#src/utils/ApiError.js'
 
 const createNew = async (data) => {
@@ -35,11 +37,31 @@ const update = async (id, data) => {
   return await boardModel.update(id, data)
 }
 
+const dragCardToAnotherColumn = async (data) => {
+  // remove dragged card from old column
+  await columnModel.update(data.oldColumnId, {
+    cardOrderIds: data.oldColumnCardOrderIds
+  })
+  // add dragged card to new column
+  await columnModel.update(data.newColumnId, {
+    cardOrderIds: data.newColumnCardOrderIds
+  })
+  // update active card columnId value to new column id
+  await cardModel.update(data.cardId, {
+    columnId: data.newColumnId
+  })
+
+  return {
+    message: 'Update success'
+  }
+}
+
 const boardService = {
   createNew,
   findOneById,
   getDetails,
-  update
+  update,
+  dragCardToAnotherColumn
 }
 
 export default boardService

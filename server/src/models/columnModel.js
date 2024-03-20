@@ -64,11 +64,17 @@ const update = async (id, data) => {
       }
     })
 
+    if (data.cardOrderIds.length > 0) {
+      data.cardOrderIds = data.cardOrderIds.map((cardId) => {
+        return new ObjectId(cardId)
+      })
+    }
+
     const result = await getDB()
       .collection(COLUMN_COLLECTION_NAME)
       .findOneAndUpdate(
         { _id: new ObjectId(id) },
-        { $set: { ...data, updatedAt: Date.now() } },
+        { $set: { ...data, cards: [], updatedAt: Date.now() } },
         { returnDocument: 'after' }
       )
     return result

@@ -25,10 +25,19 @@ const update = async (req, res, next) => {
   }
 }
 
+const dragCardToAnotherColumn = async (req, res, next) => {
+  try {
+    res.status(StatusCodes.OK).json(await boardService.dragCardToAnotherColumn(req.body))
+  } catch (error) {
+    next(error)
+  }
+}
+
 const boardController = {
   createNew,
   getDetails,
-  update
+  update,
+  dragCardToAnotherColumn
 }
 
 export default boardController
