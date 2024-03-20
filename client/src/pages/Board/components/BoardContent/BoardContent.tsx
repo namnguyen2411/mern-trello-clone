@@ -62,6 +62,7 @@ export default function BoardContent({ board }: BoardProps) {
     type: undefined,
     data: undefined
   })
+  const [draggingCardFromColumn, setDraggingCardFromColumn] = useState<ColumnType | undefined>(undefined)
 
   const queryClient = useQueryClient()
   const dragColumnMutation = useMutation({
@@ -78,6 +79,9 @@ export default function BoardContent({ board }: BoardProps) {
   })
   const dragCardInTheSameColMutation = useMutation({
     mutationFn: columnAPI.updateColumn
+  })
+  const dragCardToAnotherColumnMutation = useMutation({
+    mutationFn: boardAPI.dragCardToAnotherColumnAPI
   })
 
   // https://docs.dndkit.com/api-documentation/sensors
@@ -140,12 +144,14 @@ export default function BoardContent({ board }: BoardProps) {
   }
 
   const dragCardToAnotherColumn = (
+    activeColumn: ColumnType,
     overColumn: ColumnType,
     activeId: string,
     overId: string,
     active: Active,
     over: Over,
-    activeData: CardType
+    activeData: CardType,
+    triggerFrom?: 'handleDragEnd'
   ) => {
     setOrderedColumns(() => {
       const overCardIndex = overColumn.cards.findIndex((card) => card._id === overId) as number
@@ -158,7 +164,7 @@ export default function BoardContent({ board }: BoardProps) {
       const newIndex = overCardIndex >= 0 ? overCardIndex + modifier : overColumn.cards.length + 1
 
       const cloneColumns: ColumnType[] = cloneDeep(orderedColumns)
-      const oldColumn = cloneColumns.find((col) => col._id === activeData.columnId) as ColumnType
+      const oldColumn = cloneColumns.find((col) => col._id === activeColumn._id) as ColumnType
       const newColumn = cloneColumns.find((col) => col._id === overColumn._id) as ColumnType
 
       // remove activeCard from oldColumn
@@ -176,6 +182,21 @@ export default function BoardContent({ board }: BoardProps) {
       newColumn.cards.splice(newIndex, 0, activeData)
       newColumn.cardOrderIds = newColumn.cards.map((card) => card._id)
 
+      if (triggerFrom === 'handleDragEnd') {
+        // need to find new oldColumn value because the oldColumn value above is changed to newColumn
+        const oldColumn = cloneColumns.find(
+          (col) => col._id === (draggingCardFromColumn as ColumnType)._id
+        ) as ColumnType
+
+        dragCardToAnotherColumnMutation.mutate({
+          cardId: activeId,
+          oldColumnId: (draggingCardFromColumn as ColumnType)._id,
+          oldColumnCardOrderIds: oldColumn.cards[0].FE_placeHolderCard ? [] : oldColumn.cardOrderIds,
+          newColumnId: newColumn._id,
+          newColumnCardOrderIds: newColumn.cardOrderIds
+        })
+      }
+
       return cloneColumns
     })
   }
@@ -187,6 +208,10 @@ export default function BoardContent({ board }: BoardProps) {
       type: data.current?.columnId ? 'card' : 'column',
       data: data.current
     })
+
+    if (data.current?.columnId) {
+      setDraggingCardFromColumn(findColumnByCardId(id as string))
+    }
   }
 
   const handleDragOver = (e: DragOverEvent) => {
@@ -211,23 +236,29 @@ export default function BoardContent({ board }: BoardProps) {
     if (!activeColumn || !overColumn) return
 
     if ((activeData as CardType).columnId !== (overData as CardType).columnId) {
-      dragCardToAnotherColumn(overColumn, activeId as string, overId as string, active, over, activeData as CardType)
+      dragCardToAnotherColumn(
+        activeColumn,
+        overColumn,
+        activeId as string,
+        overId as string,
+        active,
+        over,
+        activeData as CardType
+      )
     }
   }
 
   const handleDragEnd = (e: DragEndEvent) => {
     const { active, over } = e
-    if (!active || !over || active.id === over.id) return
+    if (!active || !over) return
 
     if (draggingItem.type === 'card') {
       const {
         id: activeId,
         data: { current: activeData }
       } = active
-      const {
-        id: overId,
-        data: { current: overData }
-      } = over
+
+      const { id: overId } = over
 
       const activeColumn = findColumnByCardId(activeId as string)
       const overColumn = findColumnByCardId(overId as string)
@@ -235,8 +266,17 @@ export default function BoardContent({ board }: BoardProps) {
       if (!activeColumn || !overColumn) return
 
       // drag-drop card to another column
-      if ((activeData as CardType).columnId !== (overData as CardType).columnId) {
-        dragCardToAnotherColumn(overColumn, activeId as string, overId as string, active, over, activeData as CardType)
+      if ((draggingItem.data as CardType).columnId !== overColumn._id) {
+        dragCardToAnotherColumn(
+          activeColumn,
+          overColumn,
+          activeId as string,
+          overId as string,
+          active,
+          over,
+          activeData as CardType,
+          'handleDragEnd'
+        )
       }
       // drag-drop card in the same column
       else {
