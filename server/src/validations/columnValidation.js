@@ -33,9 +33,23 @@ const update = async (req, res, next) => {
   }
 }
 
+const deleteColumn = async (req, res, next) => {
+  const schema = Joi.object({
+    id: Joi.string().required().pattern(MONGODB_OBJECT_ID_RULE.rule).message(MONGODB_OBJECT_ID_RULE.message)
+  })
+
+  try {
+    await schema.validateAsync(req.params)
+    next()
+  } catch (error) {
+    next(new ApiError(StatusCodes.UNPROCESSABLE_ENTITY, new Error(error).message))
+  }
+}
+
 const columnValidation = {
   createNew,
-  update
+  update,
+  deleteColumn
 }
 
 export default columnValidation

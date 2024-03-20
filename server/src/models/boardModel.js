@@ -95,13 +95,29 @@ const update = async (id, data) => {
   }
 }
 
+const pullFromColumnOrderIds = async (column) => {
+  try {
+    const result = await getDB()
+      .collection(BOARD_COLLECTION_NAME)
+      .findOneAndUpdate(
+        { _id: new ObjectId(column.boardId) },
+        { $pull: { columnOrderIds: new ObjectId(column._id) } },
+        { returnDocument: 'after' }
+      )
+    return result
+  } catch (error) {
+    throw new Error(error)
+  }
+}
+
 const boardModel = {
   BOARD_SCHEMA,
   createNew,
   findOneById,
   getDetails,
   pushToColumnOrderIds,
-  update
+  update,
+  pullFromColumnOrderIds
 }
 
 export default boardModel

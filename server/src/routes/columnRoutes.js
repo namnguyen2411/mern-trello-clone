@@ -17,8 +17,6 @@ router.put('/:id', columnValidation.update, columnController.update)
 // METHOD: DELETE
 // ENDPOINT: /api/columns/:id
 // DESCRIPTION: Delete a column
-router.delete('/:id', (req, res) => {
-  res.status(200).json({ message: 'Delete a column' })
-})
+router.delete('/:id', columnValidation.deleteColumn, columnController.deleteColumn)
 
 export default router

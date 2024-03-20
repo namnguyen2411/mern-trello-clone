@@ -74,9 +74,21 @@ const update = async (id, data) => {
       .collection(COLUMN_COLLECTION_NAME)
       .findOneAndUpdate(
         { _id: new ObjectId(id) },
-        { $set: { ...data, cards: [], updatedAt: Date.now() } },
+        { $set: { ...data, updatedAt: Date.now() } },
         { returnDocument: 'after' }
       )
+    return result
+  } catch (error) {
+    throw new Error(error)
+  }
+}
+
+const deleteOneById = async (id) => {
+  try {
+    const result = await getDB()
+      .collection(COLUMN_COLLECTION_NAME)
+      .deleteOne({ _id: new ObjectId(id) })
+
     return result
   } catch (error) {
     throw new Error(error)
@@ -89,7 +101,8 @@ const columnModel = {
   createNew,
   findOneById,
   pushToCardOrderIds,
-  update
+  update,
+  deleteOneById
 }
 
 export default columnModel
