@@ -21,8 +21,10 @@
     "@mui/icons-material": "^5.15.11",
     "@mui/material": "^5.15.11",
     "@tanstack/react-query": "^5.28.2",
+    "@tanstack/react-query-devtools": "^5.28.4",
     "axios": "^1.6.7",
     "lodash": "^4.17.21",
+    "material-ui-confirm": "^3.0.11",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.22.3"

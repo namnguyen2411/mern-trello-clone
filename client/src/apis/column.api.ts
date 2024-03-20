@@ -6,9 +6,10 @@ type UpdateColumnDataType = Omit<Partial<ColumnType>, '_id'> & { _id: ColumnType
 const createNewColumn = async (data: Pick<ColumnType, 'boardId' | 'title'>) =>
   (await http.post<ColumnType>('/columns', data)).data
 
-const updateColumn = async (data: UpdateColumnDataType) => await http.put<ColumnType>(`/columns/${data._id}`, data)
+const updateColumn = async (data: UpdateColumnDataType) =>
+  (await http.put<ColumnType>(`/columns/${data._id}`, data)).data
 
-const deleteColumn = async (id: string) => await http.delete(`/columns/${id}`)
+const deleteColumn = async (id: string) => (await http.delete<{ message: string }>(`/columns/${id}`)).data
 
 const columnAPI = {
   createNewColumn,
