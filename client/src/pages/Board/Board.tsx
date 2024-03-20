@@ -27,7 +27,7 @@ export default function Board() {
   if (!boardData) return null
   return (
     <>
-      <BoardBar boardTitle={boardData.title} boardType={boardData.type} />
+      <BoardBar boardTitle={boardData.title} boardType={boardData.type} boardId={boardData._id} />
       <BoardContent board={boardData} />
     </>
   )

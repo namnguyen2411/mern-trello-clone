@@ -17,7 +17,8 @@ const getBoardDetails = async (boardId: string) => {
   return respone.data
 }
 
-const updateBoard = async (data: updateBoardDataType) => (await http.put<BoardType>(`boards/${data._id}`, data)).data
+const updateBoard = async (data: updateBoardDataType) =>
+  (await http.put<BoardType & { slug: string }>(`boards/${data._id}`, data)).data
 
 const dragCardToAnotherColumnAPI = async (data: DragCardToAnotherColumnDataType) =>
   (await http.put<BoardType>('boards/dragging_card', data)).data
