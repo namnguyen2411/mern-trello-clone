@@ -5,10 +5,12 @@ import { getDB } from '#src/config/db.js'
 import columnModel from './columnModel.js'
 import cardModel from './cardModel.js'
 
+const INVALID_UPDATE_FIELDS = ['_id', 'createdAt']
+
 const BOARD_COLLECTION_NAME = 'boards'
 const BOARD_SCHEMA = Joi.object({
-  title: Joi.string().required().min(3).max(50).trim().strict(),
-  slug: Joi.string().min(3).trim().strict(),
+  title: Joi.string().required().min(1).max(50).trim().strict(),
+  slug: Joi.string().min(1).trim().strict(),
   type: Joi.string().valid(BOARD_TYPE.public, BOARD_TYPE.private).required(),
   columnOrderIds: Joi.array()
     .items(Joi.string().pattern(MONGODB_OBJECT_ID_RULE.rule).message(MONGODB_OBJECT_ID_RULE.message))
@@ -27,8 +29,6 @@ const createNew = async (data) => {
     throw new Error(error)
   }
 }
-
-const INVALID_UPDATE_FIELDS = ['_id', 'createdAt']
 
 const findOneById = async (id) => {
   const result = await getDB()
@@ -76,6 +76,12 @@ const update = async (id, data) => {
         delete data[fieldName]
       }
     })
+
+    if (data.columnOrderIds && data.columnOrderIds.length > 0) {
+      data.columnOrderIds = data.columnOrderIds.map((columnId) => {
+        return new ObjectId(columnId)
+      })
+    }
 
     return await getDB()
       .collection(BOARD_COLLECTION_NAME)

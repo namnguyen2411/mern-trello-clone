@@ -64,7 +64,7 @@ const update = async (id, data) => {
       }
     })
 
-    if (data.cardOrderIds.length > 0) {
+    if (data.cardOrderIds && data.cardOrderIds.length > 0) {
       data.cardOrderIds = data.cardOrderIds.map((cardId) => {
         return new ObjectId(cardId)
       })

@@ -6,7 +6,7 @@ import { MONGODB_OBJECT_ID_RULE } from '#src/utils/constants.js'
 
 const createNew = async (req, res, next) => {
   const schema = Joi.object({
-    title: Joi.string().required().min(3).max(50).trim().strict(),
+    title: Joi.string().required().min(1).max(50).trim().strict(),
     type: Joi.string().required().valid(BOARD_TYPE.public, BOARD_TYPE.private)
   })
 
@@ -20,7 +20,7 @@ const createNew = async (req, res, next) => {
 
 const update = async (req, res, next) => {
   const schema = Joi.object({
-    title: Joi.string().min(3).max(50).trim().strict(),
+    title: Joi.string().min(1).max(50).trim().strict(),
     type: Joi.string().valid(BOARD_TYPE.public, BOARD_TYPE.private)
   })
 

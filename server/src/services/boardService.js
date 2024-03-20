@@ -34,6 +34,8 @@ const getDetails = async (id) => {
 }
 
 const update = async (id, data) => {
+  if (data.title) data.slug = slugify(data.title)
+
   return await boardModel.update(id, data)
 }
 
