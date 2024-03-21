@@ -4,6 +4,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { CSS } from '@dnd-kit/utilities'
 import { ExpandMore, AddCard, DragHandle, Close } from '@mui/icons-material'
 import { Box, Typography, Tooltip, Menu, MenuItem, ListItemText, Divider, Button, TextField } from '@mui/material'
+import { BoardType } from 'src/types/board.type'
 import { ColumnType } from 'src/types/column.type'
 import CardList from '../CardList'
 import cardAPI from 'src/apis/card.api'
@@ -22,15 +23,20 @@ export default function Column({ column }: ColumnProps) {
   const open = Boolean(anchorEl)
 
   const queryClient = useQueryClient()
-
   const updateColumnTitleMutation = useMutation({
     mutationFn: columnAPI.updateColumn,
-    onSuccess: () => {
-      queryClient.setQueryData(['board', column.boardId], (oldData: ColumnType) => {
+    onSuccess: (data) => {
+      queryClient.setQueryData(['board', column.boardId], (oldData: BoardType) => {
         if (!oldData) return oldData
         return {
           ...oldData,
-          title: columnTitle
+          columns: oldData.columns.map((col) => {
+            if (col._id !== data._id) return col
+            return {
+              ...col,
+              title: data.title
+            }
+          })
         }
       })
     }
@@ -38,8 +44,21 @@ export default function Column({ column }: ColumnProps) {
 
   const addCardMutation = useMutation({
     mutationFn: cardAPI.createNewCard,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['board', column.boardId] })
+    onSuccess: (data) => {
+      queryClient.setQueryData(['board', column.boardId], (oldData: BoardType) => {
+        if (!oldData) return oldData
+        return {
+          ...oldData,
+          columns: oldData.columns.map((col) => {
+            if (col._id !== data.columnId) return col
+            return {
+              ...col,
+              cards: col.cards[0].FE_placeHolderCard ? [data] : [...col.cards, data],
+              cardOrderIds: col.cardOrderIds[0].includes('placeholder') ? [data._id] : [...col.cardOrderIds, data._id]
+            }
+          })
+        }
+      })
     }
   })
 

@@ -67,21 +67,43 @@ export default function BoardContent({ board }: BoardProps) {
   const queryClient = useQueryClient()
   const dragColumnMutation = useMutation({
     mutationFn: boardAPI.updateBoard,
-    onSuccess: (data) => {
+    onSuccess: (data: Omit<BoardType, 'columns'>) => {
       queryClient.setQueryData(['board', board._id], (oldData: BoardType) => {
         if (!oldData) return oldData
         return {
           ...oldData,
-          columnOrderIds: data.columnOrderIds
+          columnOrderIds: data.columnOrderIds,
+          columns: orderedColumns
         }
       })
     }
   })
   const dragCardInTheSameColMutation = useMutation({
-    mutationFn: columnAPI.updateColumn
+    mutationFn: columnAPI.updateColumn,
+    onSuccess(data: Pick<ColumnType, 'cardOrderIds' | 'cards' | '_id'>) {
+      queryClient.setQueryData(['board', board._id], (oldData: BoardType) => {
+        if (!oldData) return oldData
+        return {
+          ...oldData,
+          columns: oldData.columns.map((col) => {
+            if (col._id !== data._id) return col
+            return {
+              ...col,
+              cardOrderIds: data.cardOrderIds,
+              cards: data.cards
+            }
+          })
+        }
+      })
+    }
   })
   const dragCardToAnotherColumnMutation = useMutation({
-    mutationFn: boardAPI.dragCardToAnotherColumnAPI
+    mutationFn: boardAPI.dragCardToAnotherColumnAPI,
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ['board', board._id]
+      })
+    }
   })
 
   // https://docs.dndkit.com/api-documentation/sensors
