@@ -9,8 +9,17 @@ const createNew = async (req, res, next) => {
   }
 }
 
+const deleteCard = async (req, res, next) => {
+  try {
+    res.status(StatusCodes.OK).json(await cardService.deleteCard(req.params.id))
+  } catch (error) {
+    next(error)
+  }
+}
+
 const cardController = {
-  createNew
+  createNew,
+  deleteCard
 }
 
 export default cardController

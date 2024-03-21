@@ -9,8 +9,17 @@ export const createNew = async (data) => {
   return newCard
 }
 
+const deleteCard = async (id) => {
+  const foundedCard = await cardModel.findOneById(id)
+  if (!foundedCard) throw new ApiError(StatusCodes.NOT_FOUND, 'Card not found')
+
+  await cardModel.deleteOneById(id)
+  return await columnModel.pullFromCardOrderIds(foundedCard)
+}
+
 const cardService = {
-  createNew
+  createNew,
+  deleteCard
 }
 
 export default cardService

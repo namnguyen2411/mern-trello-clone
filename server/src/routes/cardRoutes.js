@@ -19,8 +19,6 @@ router.put('/:id', (req, res) => {
 // METHOD: DELETE
 // ENDPOINT: /api/cards/:id
 // DESCRIPTION: Delete a card
-router.delete('/:id', (req, res) => {
-  res.status(200).json({ message: 'Delete a card' })
-})
+router.delete('/:id', cardValidation.deleteCard, cardController.deleteCard)
 
 export default router

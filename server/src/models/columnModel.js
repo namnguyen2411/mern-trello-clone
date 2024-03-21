@@ -95,6 +95,21 @@ const deleteOneById = async (id) => {
   }
 }
 
+const pullFromCardOrderIds = async (card) => {
+  try {
+    const result = await getDB()
+      .collection(COLUMN_COLLECTION_NAME)
+      .findOneAndUpdate(
+        { _id: new ObjectId(card.columnId) },
+        { $pull: { cardOrderIds: new ObjectId(card._id) } },
+        { returnDocument: 'after' }
+      )
+    return result
+  } catch (error) {
+    throw new Error(error)
+  }
+}
+
 const columnModel = {
   COLUMN_COLLECTION_NAME,
   COLUMN_SCHEMA,
@@ -102,7 +117,8 @@ const columnModel = {
   findOneById,
   pushToCardOrderIds,
   update,
-  deleteOneById
+  deleteOneById,
+  pullFromCardOrderIds
 }
 
 export default columnModel
