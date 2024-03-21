@@ -1,6 +1,7 @@
 import { useState, MouseEvent } from 'react'
 import { useSortable } from '@dnd-kit/sortable'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useConfirm } from 'material-ui-confirm'
 import { CSS } from '@dnd-kit/utilities'
 import { ExpandMore, AddCard, DragHandle, Close } from '@mui/icons-material'
 import { Box, Typography, Tooltip, Menu, MenuItem, ListItemText, Divider, Button, TextField } from '@mui/material'
@@ -62,6 +63,38 @@ export default function Column({ column }: ColumnProps) {
     }
   })
 
+  const deleteColumnMutation = useMutation({
+    mutationFn: columnAPI.deleteColumn,
+    onSuccess: (_data, deletedColumnId) => {
+      queryClient.setQueryData(['board', column.boardId], (oldData: BoardType) => {
+        if (!oldData) return oldData
+        return {
+          ...oldData,
+          columns: oldData.columns.filter((col) => col._id !== deletedColumnId),
+          columnOrderIds: oldData.columnOrderIds.filter((colId) => colId !== deletedColumnId)
+        }
+      })
+    }
+  })
+
+  const confirm = useConfirm()
+  const handleDeleteColumn = () => {
+    handleClose()
+    confirm({
+      title: 'Delete column',
+      description: 'This action will permanently delete this column and all of its cards. Are you sure?',
+      confirmationButtonProps: {
+        color: 'error',
+        variant: 'contained'
+      },
+      cancellationButtonProps: {
+        variant: 'contained'
+      }
+    }).then(() => {
+      deleteColumnMutation.mutate(column._id)
+    })
+  }
+
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: column._id,
     data: { ...column }
@@ -98,6 +131,7 @@ export default function Column({ column }: ColumnProps) {
   const toggleAddNewCardHandler = () => {
     setCardTitle('')
     setOpenAddNewCard(!openAddNewCard)
+    handleClose()
   }
 
   const handleChangeCardTitle = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -118,6 +152,7 @@ export default function Column({ column }: ColumnProps) {
 
   const handleClick = (e: MouseEvent<SVGSVGElement, globalThis.MouseEvent>) => {
     setAnchorEl(e.target as HTMLElement)
+    setOpenAddNewCard((prev) => (prev === true ? false : false))
   }
   const handleClose = () => {
     setAnchorEl(null)
@@ -200,14 +235,14 @@ export default function Column({ column }: ColumnProps) {
                 'aria-labelledby': 'button-dropdown'
               }}
             >
-              <MenuItem>
+              <MenuItem onClick={toggleAddNewCardHandler}>
                 <ListItemText>Add new card</ListItemText>
               </MenuItem>
               <MenuItem>
                 <ListItemText>Cut</ListItemText>
               </MenuItem>
               <Divider />
-              <MenuItem>
+              <MenuItem onClick={handleDeleteColumn}>
                 <ListItemText>Remove this column</ListItemText>
               </MenuItem>
             </Menu>

@@ -10,7 +10,8 @@ const boardId = '65eaf36047cb08791e8d6345'
 export default function Board() {
   const boardResponse = useQuery({
     queryKey: ['board', boardId],
-    queryFn: () => boardAPI.getBoardDetails(boardId)
+    queryFn: () => boardAPI.getBoardDetails(boardId),
+    staleTime: 1000 * 60 * 30 // 30 minutes
   })
   const boardData = boardResponse.data
 
