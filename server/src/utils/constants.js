@@ -8,4 +8,14 @@ export const MONGODB_OBJECT_ID_RULE = {
   message: 'Your string fails to match the Object Id pattern!'
 }
 
+export const EMAIL_RULE = {
+  rule: /^[\w\.]+@([\w-]+.)+[\w-]{2,4}$/,
+  message: 'Your email fails to match the Email pattern!'
+}
+
+export const PASSWORD_RULE = {
+  rule: /^[a-zA-Z0-9]+$/,
+  message: 'Your password fails to match the Password pattern!'
+}
+
 export const WHITELIST_DOMAINS = ['http://localhost:5173']
