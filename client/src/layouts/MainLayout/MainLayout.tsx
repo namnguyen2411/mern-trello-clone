@@ -1,4 +1,4 @@
-import { Container } from '@mui/material'
+import { Container, Divider } from '@mui/material'
 import { Outlet } from 'react-router-dom'
 import Header from 'src/components/Header'
 
@@ -13,6 +13,7 @@ export default function Board() {
       }}
     >
       <Header />
+      <Divider />
       <Outlet />
     </Container>
   )

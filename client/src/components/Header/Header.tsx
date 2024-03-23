@@ -37,6 +37,7 @@ export default function Header() {
       gap={4}
       px={2}
       height={(theme) => theme.trello.headerHeight}
+      marginTop='-1px'
       sx={{
         overflowX: 'auto'
       }}

@@ -16,10 +16,8 @@ function ModeSelect() {
 
   return (
     <FormControl sx={{ minWidth: '128px' }}>
-      <InputLabel id='select-label-mode'>Mode</InputLabel>
+      <InputLabel>Mode</InputLabel>
       <Select
-        labelId='select-label-mode'
-        id='select-mode'
         value={mode}
         label='Mode'
         onChange={handleChangeMode}
@@ -27,7 +25,9 @@ function ModeSelect() {
         sx={{
           '& .MuiSvgIcon-root': {
             color: 'primary.main'
-          }
+          },
+          maxHeight: 36,
+          fontSize: '0.875rem'
         }}
       >
         <MenuItem value={'light'}>

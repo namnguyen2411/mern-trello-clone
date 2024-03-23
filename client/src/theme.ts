@@ -9,6 +9,7 @@ declare module '@mui/material/styles' {
       columnWidth: number
       columnHeaderHeight: number
       addNewColumnWidth: number
+      starIconColor: string
     }
   }
   interface ThemeOptions {
@@ -19,6 +20,7 @@ declare module '@mui/material/styles' {
       columnWidth: number
       columnHeaderHeight: number
       addNewColumnWidth: number
+      starIconColor: string
     }
   }
   interface Palette {
@@ -35,18 +37,22 @@ declare module '@mui/material/styles' {
 export const theme = extendTheme({
   trello: {
     MAIN_LAYOUT_PADDING_TOP: '4px',
-    headerHeight: 58,
+    headerHeight: 50,
     boardBarHeight: 50,
     columnWidth: 300,
     columnHeaderHeight: 46,
-    addNewColumnWidth: 250
+    addNewColumnWidth: 250,
+    starIconColor: '#ffdb58'
   },
 
   colorSchemes: {
     light: {
       palette: {
         boardContentBg: '#1976d2',
-        cardBg: '#dadada'
+        cardBg: '#dadada',
+        background: {
+          paper: 'rgb(245, 245, 245)'
+        }
       }
     },
     dark: {
@@ -75,6 +81,20 @@ export const theme = extendTheme({
       styleOverrides: {
         root: {
           '&.MuiTypography-body1': { fontSize: '0.875rem' }
+        }
+      }
+    },
+    MuiInputBase: {
+      styleOverrides: {
+        root: {
+          fontSize: '0.875rem'
+        }
+      }
+    },
+    MuiFormLabel: {
+      styleOverrides: {
+        root: {
+          fontWeight: '500'
         }
       }
     }
