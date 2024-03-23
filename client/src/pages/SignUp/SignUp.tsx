@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useMutation } from '@tanstack/react-query'
 import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { Link, useNavigate } from 'react-router-dom'
 import { VisibilityOff, Visibility, Email, Lock } from '@mui/icons-material'
 import {
   Box,
@@ -12,25 +13,34 @@ import {
   Input,
   InputAdornment,
   InputLabel,
-  TextField
+  TextField,
+  CircularProgress,
+  Typography
 } from '@mui/material'
 import { signUpSchemaRefined, SignUpSchemaType } from 'src/utils/schema'
 import authAPI from 'src/apis/auth.api'
+import { UserType } from 'src/types/user.type'
+import { publicRoutes } from 'src/routes'
 
 export default function SignUp() {
   const [showPassword, setShowPassword] = useState({
     password: false,
     confirmPassword: false
   })
-
+  const navigate = useNavigate()
   const signUpMutation = useMutation({
     mutationFn: authAPI.signup,
-    onSuccess: (data) => {
-      console.log(data)
+    onSuccess: (data: UserType) => {
       reset()
+      navigate(`/u/${data._id}/boards`, {
+        state: data
+      })
     },
     onError: (error) => {
-      console.log(error)
+      setError('email', {
+        type: 'custom',
+        message: error.message
+      })
     }
   })
 
@@ -51,8 +61,7 @@ export default function SignUp() {
   })
 
   const onSubmit = (data: SignUpSchemaType) => {
-    console.log(data)
-    signUpMutation.mutate(data)
+    signUpMutation.mutate({ email: data.email, password: data.password })
   }
 
   const handleClickShowPassword = (field: 'password' | 'confirmPassword') => {
@@ -77,9 +86,13 @@ export default function SignUp() {
           gap: 3,
           boxShadow: 'rgba(0, 0, 0, 0.4) 0px 0px 10px',
           padding: '24px 32px',
-          width: '400px'
+          width: '460px'
         }}
       >
+        {/* Title */}
+        <Typography variant='h4' textAlign='center' marginBottom={2}>
+          Create an account
+        </Typography>
         {/* Email */}
         <Box sx={{ display: 'flex', alignItems: 'center' }}>
           <Email fontSize='medium' sx={{ color: 'action.active', mr: 1, my: 0.5 }} />
@@ -101,7 +114,6 @@ export default function SignUp() {
             }}
           />
         </Box>
-
         {/* Password */}
         <Box sx={{ display: 'flex', alignItems: 'center' }}>
           <Lock fontSize='medium' sx={{ color: 'action.active', mr: 1 }} />
@@ -141,7 +153,6 @@ export default function SignUp() {
             <FormHelperText sx={{ color: 'error.main', fontWeight: '500' }}>{errors.password?.message}</FormHelperText>
           </FormControl>
         </Box>
-
         {/* Confirm Password */}
         <Box sx={{ display: 'flex', alignItems: 'center' }}>
           <Lock fontSize='medium' sx={{ color: 'action.active', mr: 1 }} />
@@ -157,6 +168,7 @@ export default function SignUp() {
                   {...field}
                   error={!!errors.confirmPassword}
                   id='adornment-confirm-password'
+                  autoComplete='off'
                   type={showPassword.confirmPassword ? 'text' : 'password'}
                   endAdornment={
                     <InputAdornment position='end'>
@@ -176,16 +188,33 @@ export default function SignUp() {
             </FormHelperText>
           </FormControl>
         </Box>
-
+        {/* Sign Up Button */}
         <Button
           type='submit'
           variant='contained'
           color='success'
           size='medium'
-          sx={{ fontWeight: 'bold', fontSize: '1rem' }}
+          disabled={signUpMutation.isPending}
+          sx={{
+            fontWeight: 'bold',
+            fontSize: '1rem',
+            display: 'flex',
+            alignItems: 'center',
+            gap: 2
+          }}
         >
+          {signUpMutation.isPending && <CircularProgress color='inherit' size={16} />}
           Sign Up
         </Button>
+        {/* Link to Login */}
+        <Box>
+          <Typography fontWeight='500' textAlign='center' color='primary.main'>
+            Already have an account?
+            <Link to={publicRoutes.login} style={{ color: 'inherit', marginLeft: '5px' }}>
+              Log In
+            </Link>
+          </Typography>
+        </Box>
       </Box>
     </form>
   )
