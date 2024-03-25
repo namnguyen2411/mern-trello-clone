@@ -17,6 +17,10 @@ const findOneById = async (id) => {
   return await boardModel.findOneById(id)
 }
 
+const getBoardsByOwnerId = async (data) => {
+  return await boardModel.getBoardsByOwnerId(data)
+}
+
 const getDetails = async (id) => {
   const boardDetail = await boardModel.getDetails(id)
   if (!boardDetail) throw new ApiError(StatusCodes.NOT_FOUND, 'Board not found')
@@ -60,6 +64,7 @@ const dragCardToAnotherColumn = async (data) => {
 
 const boardService = {
   createNew,
+  getBoardsByOwnerId,
   findOneById,
   getDetails,
   update,

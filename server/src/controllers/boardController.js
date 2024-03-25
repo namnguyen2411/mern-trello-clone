@@ -9,6 +9,14 @@ const createNew = async (req, res, next) => {
   }
 }
 
+const getBoardsByOwnerId = async (req, res, next) => {
+  try {
+    res.status(StatusCodes.OK).json(await boardService.getBoardsByOwnerId(req.body))
+  } catch (error) {
+    next(error)
+  }
+}
+
 const getDetails = async (req, res, next) => {
   try {
     res.status(StatusCodes.OK).json(await boardService.getDetails(req.params.id))
@@ -35,6 +43,7 @@ const dragCardToAnotherColumn = async (req, res, next) => {
 
 const boardController = {
   createNew,
+  getBoardsByOwnerId,
   getDetails,
   update,
   dragCardToAnotherColumn

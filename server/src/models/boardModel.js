@@ -9,6 +9,14 @@ const INVALID_UPDATE_FIELDS = ['_id', 'createdAt']
 
 const BOARD_COLLECTION_NAME = 'boards'
 const BOARD_SCHEMA = Joi.object({
+  ownerId: Joi.string()
+    .required()
+    .pattern(MONGODB_OBJECT_ID_RULE.rule)
+    .message(MONGODB_OBJECT_ID_RULE.message)
+    .trim()
+    .strict(),
+  starred: Joi.boolean().default(false),
+  starredAt: Joi.date().timestamp('javascript').default(null),
   title: Joi.string().required().min(1).max(50).trim().strict(),
   slug: Joi.string().min(1).trim().strict(),
   type: Joi.string().valid(BOARD_TYPE.public, BOARD_TYPE.private).required(),
@@ -24,10 +32,21 @@ const createNew = async (data) => {
   try {
     const newBoard = await BOARD_SCHEMA.validateAsync(data, { abortEarly: false })
 
-    return await getDB().collection(BOARD_COLLECTION_NAME).insertOne(newBoard)
+    return await getDB()
+      .collection(BOARD_COLLECTION_NAME)
+      .insertOne({ ...newBoard, ownerId: new ObjectId(newBoard.ownerId) })
   } catch (error) {
     throw new Error(error)
   }
+}
+
+const getBoardsByOwnerId = async (data) => {
+  const result = await getDB()
+    .collection(BOARD_COLLECTION_NAME)
+    .find({ ownerId: new ObjectId(data.ownerId) })
+    .toArray()
+
+  return result
 }
 
 const findOneById = async (id) => {
@@ -111,8 +130,10 @@ const pullFromColumnOrderIds = async (column) => {
 }
 
 const boardModel = {
+  BOARD_COLLECTION_NAME,
   BOARD_SCHEMA,
   createNew,
+  getBoardsByOwnerId,
   findOneById,
   getDetails,
   pushToColumnOrderIds,

@@ -4,17 +4,15 @@ import boardController from '#src/controllers/boardController.js'
 
 const router = express.Router()
 
-// METHOD: GET
-// ENDPOINT: /api/boards
-// DESCRIPTION: Get all boards
-router.get('/', (req, res) => {
-  res.status(200).json({ message: 'Get all boards' })
-})
-
 // METHOD: POST
 // ENDPOINT: /api/boards
 // DESCRIPTION: Create a new board
-router.post('/', boardValidation.createNew, boardController.createNew)
+router.post('/create', boardValidation.createNew, boardController.createNew)
+
+// METHOD: POST
+// ENDPOINT: /api/boards
+// DESCRIPTION: Get all boards by ownerId
+router.post('/:ownerId', boardValidation.getBoardsByOwnerId, boardController.getBoardsByOwnerId)
 
 // METHOD: GET
 // ENDPOINT: /api/boards/:id
