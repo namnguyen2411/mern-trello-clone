@@ -1,5 +1,10 @@
 import { Box, Container, useColorScheme } from '@mui/material'
 import { Outlet } from 'react-router-dom'
+import { ModeType } from 'src/types/mode.type'
+import trellobg from 'src/assets/trellobg.png'
+
+const prevMode = localStorage.getItem('mui-mode') ? (localStorage.getItem('mui-mode') as ModeType) : 'system'
+localStorage.setItem('prevMode', prevMode as string)
 
 export default function AuthLayout() {
   const { setMode } = useColorScheme()
@@ -10,7 +15,10 @@ export default function AuthLayout() {
       disableGutters
       maxWidth={false}
       sx={{
-        height: '100vh'
+        height: '100vh',
+        backgroundImage: `url("${trellobg}")`,
+        backgroundRepeat: 'no-repeat',
+        backgroundPosition: 'center'
       }}
     >
       <Box
@@ -60,7 +68,14 @@ export default function AuthLayout() {
             />
           </svg>
         </Box>
-        <Outlet />
+        <Box
+          sx={{
+            opacity: 0.95,
+            bgcolor: 'whitesmoke'
+          }}
+        >
+          <Outlet />
+        </Box>
       </Box>
     </Container>
   )

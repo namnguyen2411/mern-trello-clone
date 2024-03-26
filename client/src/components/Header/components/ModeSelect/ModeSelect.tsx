@@ -1,5 +1,6 @@
 import { LightMode, DarkMode, SettingsBrightness } from '@mui/icons-material'
 import { useColorScheme, SelectChangeEvent, FormControl, InputLabel, Select, MenuItem, Box } from '@mui/material'
+import { ModeType } from 'src/types/mode.type'
 
 const defaultBoxProps = {
   display: 'flex',
@@ -10,8 +11,8 @@ const defaultBoxProps = {
 function ModeSelect() {
   const { mode, setMode } = useColorScheme()
 
-  const handleChangeMode = (e: SelectChangeEvent<'light' | 'dark' | 'system'>) => {
-    setMode(e.target.value as 'light' | 'dark' | 'system')
+  const handleChangeMode = (e: SelectChangeEvent<ModeType>) => {
+    setMode(e.target.value as ModeType)
   }
 
   return (
