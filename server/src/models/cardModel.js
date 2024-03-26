@@ -34,11 +34,13 @@ const createNew = async (data) => {
 }
 
 const findOneById = async (id) => {
-  const result = await getDB()
-    .collection(CARD_COLLECTION_NAME)
-    .findOne({ _id: new ObjectId(id) })
-
-  return result
+  try {
+    return await getDB()
+      .collection(CARD_COLLECTION_NAME)
+      .findOne({ _id: new ObjectId(id) })
+  } catch (error) {
+    throw new Error(error)
+  }
 }
 
 const update = async (id, data) => {
@@ -66,20 +68,30 @@ const update = async (id, data) => {
 }
 
 const deleteManyByColumnId = async (id) => {
-  const result = await getDB()
-    .collection(CARD_COLLECTION_NAME)
-    .deleteMany({ columnId: new ObjectId(id) })
+  try {
+    return await getDB()
+      .collection(CARD_COLLECTION_NAME)
+      .deleteMany({ columnId: new ObjectId(id) })
+  } catch (error) {
+    throw new Error(error)
+  }
+}
 
-  return result
+const deleteManyByBoardId = async (id) => {
+  try {
+    return await getDB()
+      .collection(CARD_COLLECTION_NAME)
+      .deleteMany({ boardId: new ObjectId(id) })
+  } catch (error) {
+    throw new Error(error)
+  }
 }
 
 const deleteOneById = async (id) => {
   try {
-    const result = await getDB()
+    return await getDB()
       .collection(CARD_COLLECTION_NAME)
       .deleteOne({ _id: new ObjectId(id) })
-
-    return result
   } catch (error) {
     throw new Error(error)
   }
@@ -92,6 +104,7 @@ const cardModel = {
   findOneById,
   update,
   deleteManyByColumnId,
+  deleteManyByBoardId,
   deleteOneById
 }
 

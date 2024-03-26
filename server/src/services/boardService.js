@@ -62,13 +62,24 @@ const dragCardToAnotherColumn = async (data) => {
   }
 }
 
+const deleteBoard = async (id) => {
+  await columnModel.deleteManyByBoardId(id)
+  await cardModel.deleteManyByBoardId(id)
+
+  return {
+    message: 'Delete board success',
+    data: await boardModel.deleteOneById(id)
+  }
+}
+
 const boardService = {
   createNew,
   getBoardsByOwnerId,
   findOneById,
   getDetails,
   update,
-  dragCardToAnotherColumn
+  dragCardToAnotherColumn,
+  deleteBoard
 }
 
 export default boardService

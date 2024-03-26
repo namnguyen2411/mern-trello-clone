@@ -41,12 +41,21 @@ const dragCardToAnotherColumn = async (req, res, next) => {
   }
 }
 
+const deleteBoard = async (req, res, next) => {
+  try {
+    res.status(StatusCodes.OK).json(await boardService.deleteBoard(req.params.id))
+  } catch (error) {
+    next(error)
+  }
+}
+
 const boardController = {
   createNew,
   getBoardsByOwnerId,
   getDetails,
   update,
-  dragCardToAnotherColumn
+  dragCardToAnotherColumn,
+  deleteBoard
 }
 
 export default boardController

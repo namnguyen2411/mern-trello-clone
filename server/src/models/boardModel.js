@@ -129,6 +129,16 @@ const pullFromColumnOrderIds = async (column) => {
   }
 }
 
+const deleteOneById = async (id) => {
+  try {
+    return await getDB()
+      .collection(BOARD_COLLECTION_NAME)
+      .findOneAndDelete({ _id: new ObjectId(id) })
+  } catch (error) {
+    throw new Error(error)
+  }
+}
+
 const boardModel = {
   BOARD_COLLECTION_NAME,
   BOARD_SCHEMA,
@@ -138,7 +148,8 @@ const boardModel = {
   getDetails,
   pushToColumnOrderIds,
   update,
-  pullFromColumnOrderIds
+  pullFromColumnOrderIds,
+  deleteOneById
 }
 
 export default boardModel

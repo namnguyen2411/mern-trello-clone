@@ -40,6 +40,16 @@ const findOneById = async (id) => {
   return result
 }
 
+const deleteManyByBoardId = async (id) => {
+  try {
+    return await getDB()
+      .collection(COLUMN_COLLECTION_NAME)
+      .deleteMany({ boardId: new ObjectId(id) })
+  } catch (error) {
+    throw new Error(error)
+  }
+}
+
 const pushToCardOrderIds = async (card) => {
   try {
     const result = await getDB()
@@ -115,6 +125,7 @@ const columnModel = {
   COLUMN_SCHEMA,
   createNew,
   findOneById,
+  deleteManyByBoardId,
   pushToCardOrderIds,
   update,
   deleteOneById,

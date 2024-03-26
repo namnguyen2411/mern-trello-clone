@@ -32,8 +32,6 @@ router.put('/:id', boardValidation.update, boardController.update)
 // METHOD: DELETE
 // ENDPOINT: /api/boards/:id
 // DESCRIPTION: Delete a board
-router.delete('/:id', (req, res) => {
-  res.status(200).json({ message: 'Delete a board' })
-})
+router.delete('/:id', boardController.deleteBoard)
 
 export default router
