@@ -12,10 +12,11 @@ type ColumnListProps = {
   columns: ColumnType[]
   boardId: string
   setOrderedColumns: React.Dispatch<React.SetStateAction<ColumnType[]>>
+  locateFrom?: string
 }
 
-export default function ColumnList({ columns, boardId, setOrderedColumns }: ColumnListProps) {
-  const [openAddNewColumn, setOpenAddNewColumn] = useState(false)
+export default function ColumnList({ columns, boardId, setOrderedColumns, locateFrom }: ColumnListProps) {
+  const [openAddNewColumn, setOpenAddNewColumn] = useState(locateFrom === 'create-new-board' ? true : false)
   const [columnTitle, setColumnTitle] = useState('')
   const queryClient = useQueryClient()
 

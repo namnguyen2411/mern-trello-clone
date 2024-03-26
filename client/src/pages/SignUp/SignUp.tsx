@@ -32,9 +32,7 @@ export default function SignUp() {
     mutationFn: authAPI.signup,
     onSuccess: (data: UserType) => {
       reset()
-      navigate(`/u/${data._id}/boards`, {
-        state: data
-      })
+      navigate(`/u/${data.username ? data.username : data._id}/boards`)
     },
     onError: (error) => {
       setError('email', {

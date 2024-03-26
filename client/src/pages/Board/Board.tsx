@@ -1,13 +1,17 @@
 import { useQuery } from '@tanstack/react-query'
+import { useLocation, useParams } from 'react-router-dom'
 import BoardBar from './components/BoardBar'
 import BoardContent from './components/BoardContent'
 import boardAPI from 'src/apis/board.api'
 import { generatePlaceholderCard } from 'src/utils/generatePlaceholderCard'
 import { mapOrder } from 'src/utils/sort'
 
-const boardId = '65eaf36047cb08791e8d6345'
-
 export default function Board() {
+  const params = useParams()
+  const boardId = params.boardId as string
+  const location = useLocation()
+  const locateFrom = location.state?.from
+
   const boardResponse = useQuery({
     queryKey: ['board', boardId],
     queryFn: () => boardAPI.getBoardDetails(boardId),
@@ -28,8 +32,13 @@ export default function Board() {
   if (!boardData) return null
   return (
     <>
-      <BoardBar boardTitle={boardData.title} boardType={boardData.type} boardId={boardData._id} />
-      <BoardContent board={boardData} />
+      <BoardBar
+        boardTitle={boardData.title}
+        boardType={boardData.type}
+        boardId={boardData._id}
+        userId={boardData.ownerId}
+      />
+      <BoardContent board={boardData} locateFrom={locateFrom} />
     </>
   )
 }

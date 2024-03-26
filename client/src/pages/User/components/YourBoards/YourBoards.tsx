@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import {
   Box,
   Button,
@@ -21,13 +21,12 @@ import {
 } from '@mui/material'
 import { Public, Lock, Close, StarRounded, StarOutlineRounded } from '@mui/icons-material'
 import { BoardType } from 'src/types/board.type'
-import { UserType } from 'src/types/user.type'
 import boardAPI from 'src/apis/board.api'
 import useSetStarredBoard from 'src/hooks/useSetStarredBoard'
 import useUnsetStarredBoard from 'src/hooks/useUnsetStarredBoard'
 
 type YourBoardsProps = {
-  user: UserType
+  userId: string
   boards: BoardType[]
 }
 
@@ -41,22 +40,30 @@ const newBoardFormInitial: CreateNewBoardFormType = {
   type: 'public'
 }
 
-export default function YourBoards({ user, boards }: YourBoardsProps) {
+export default function YourBoards({ userId, boards }: YourBoardsProps) {
   const [openCreateNewBoard, setOpenCreateNewBoard] = useState(false)
   const [createNewBoardForm, setCreateNewBoardForm] = useState<CreateNewBoardFormType>(newBoardFormInitial)
   const [hoverBoardId, setHoverBoardId] = useState('')
   const [hoverBoardStar, setHoverBoardStar] = useState('')
+  const navigate = useNavigate()
 
-  const { handleSetStarredBoard } = useSetStarredBoard(user)
-  const { handleUnsetStarredBoard } = useUnsetStarredBoard(user)
+  const { handleSetStarredBoard } = useSetStarredBoard(userId)
+  const { handleUnsetStarredBoard } = useUnsetStarredBoard(userId)
 
   const queryClient = useQueryClient()
   const createNewBoardMutation = useMutation({
     mutationFn: boardAPI.createNewBoard,
     onSuccess: (data) => {
-      queryClient.setQueryData(['boards', 'userId', user._id], (oldData: BoardType[]) => {
+      queryClient.setQueryData(['boards', 'userId', userId], (oldData: BoardType[]) => {
         if (!oldData) return oldData
         return [...oldData, data]
+      })
+
+      handleCloseCreateNewBoard()
+      navigate(`/b/${data._id}/${data.slug}`, {
+        state: {
+          from: 'create-new-board'
+        }
       })
     }
   })
@@ -70,7 +77,7 @@ export default function YourBoards({ user, boards }: YourBoardsProps) {
     createNewBoardMutation.mutate({
       title: createNewBoardForm.title,
       type: createNewBoardForm.type,
-      ownerId: user._id
+      ownerId: userId
     })
 
     handleCloseCreateNewBoard()
@@ -108,7 +115,17 @@ export default function YourBoards({ user, boards }: YourBoardsProps) {
           >
             <Link to={`/b/${_id}/${slug}`} style={{ textDecoration: 'none', color: 'inherit' }}>
               <CardContent sx={{ height: '100%' }}>
-                <Typography component='div' fontWeight='bold'>
+                <Typography
+                  component='div'
+                  fontWeight='bold'
+                  sx={{
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    display: '-webkit-box',
+                    WebkitLineClamp: '2',
+                    WebkitBoxOrient: 'vertical'
+                  }}
+                >
                   {title}
                 </Typography>
               </CardContent>

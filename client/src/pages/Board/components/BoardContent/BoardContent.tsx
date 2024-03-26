@@ -37,6 +37,7 @@ import columnAPI from 'src/apis/column.api'
 
 type BoardProps = {
   board: BoardType
+  locateFrom?: string
 }
 
 type DraggingItemType = {
@@ -55,7 +56,7 @@ const dropAnimation = {
   })
 }
 
-export default function BoardContent({ board }: BoardProps) {
+export default function BoardContent({ board, locateFrom }: BoardProps) {
   const [orderedColumns, setOrderedColumns] = useState<ColumnType[]>([])
   const [draggingItem, setDraggingItem] = useState<DraggingItemType>({
     id: '',
@@ -353,7 +354,12 @@ export default function BoardContent({ board }: BoardProps) {
         }
         bgcolor={(theme) => theme.palette.boardContentBg}
       >
-        <ColumnList columns={orderedColumns} boardId={board._id} setOrderedColumns={setOrderedColumns} />
+        <ColumnList
+          columns={orderedColumns}
+          boardId={board._id}
+          setOrderedColumns={setOrderedColumns}
+          locateFrom={locateFrom}
+        />
 
         <DragOverlay dropAnimation={dropAnimation}>
           {draggingItem.id === '' ? null : draggingItem.type === 'column' ? (

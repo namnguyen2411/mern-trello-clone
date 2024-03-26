@@ -3,18 +3,17 @@ import { Link } from 'react-router-dom'
 import { Box, Card, CardContent, Typography } from '@mui/material'
 import { StarOutlineRounded, StarRounded } from '@mui/icons-material'
 import { BoardType } from 'src/types/board.type'
-import { UserType } from 'src/types/user.type'
 import useUnsetStarredBoard from 'src/hooks/useUnsetStarredBoard'
 
 type StarredBoardsProps = {
-  user: UserType
+  userId: string
   boards: BoardType[] | []
 }
 
-export default function YourBoards({ user, boards }: StarredBoardsProps) {
+export default function YourBoards({ userId, boards }: StarredBoardsProps) {
   const [hoverBoardStar, setHoverBoardStar] = useState('')
 
-  const { handleUnsetStarredBoard } = useUnsetStarredBoard(user)
+  const { handleUnsetStarredBoard } = useUnsetStarredBoard(userId)
 
   return (
     <Box>
@@ -45,7 +44,17 @@ export default function YourBoards({ user, boards }: StarredBoardsProps) {
           >
             <Link to={`/b/${_id}/${slug}`} style={{ textDecoration: 'none', color: 'inherit' }}>
               <CardContent sx={{ height: '100%' }}>
-                <Typography component='div' fontWeight='bold'>
+                <Typography
+                  component='div'
+                  fontWeight='bold'
+                  sx={{
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    display: '-webkit-box',
+                    WebkitLineClamp: '2',
+                    WebkitBoxOrient: 'vertical'
+                  }}
+                >
                   {title}
                 </Typography>
               </CardContent>

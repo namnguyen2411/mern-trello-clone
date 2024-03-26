@@ -31,7 +31,8 @@ const updateBoard = async (data: UpdateBoardDataType) => (await http.put<BoardTy
 const dragCardToAnotherColumnAPI = async (data: DragCardToAnotherColumnDataType) =>
   (await http.put<{ message: string }>('boards/dragging_card', data)).data
 
-const deleteBoard = async (id: string) => (await http.delete<{ message: string }>(`/boards/${id}`)).data
+const deleteBoard = async (id: string) =>
+  (await http.delete<{ message: string; data: BoardType }>(`/boards/${id}`)).data
 
 const boardAPI = {
   createNewBoard,
