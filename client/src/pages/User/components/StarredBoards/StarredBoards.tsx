@@ -1,11 +1,10 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { Box, Card, CardContent, Typography } from '@mui/material'
 import { StarOutlineRounded, StarRounded } from '@mui/icons-material'
 import { BoardType } from 'src/types/board.type'
 import { UserType } from 'src/types/user.type'
-import boardAPI from 'src/apis/board.api'
+import useUnsetStarredBoard from 'src/hooks/useUnsetStarredBoard'
 
 type StarredBoardsProps = {
   user: UserType
@@ -15,27 +14,7 @@ type StarredBoardsProps = {
 export default function YourBoards({ user, boards }: StarredBoardsProps) {
   const [hoverBoardStar, setHoverBoardStar] = useState('')
 
-  const queryClient = useQueryClient()
-  const unsetStarredBoardMutation = useMutation({
-    mutationFn: boardAPI.updateBoard,
-    onSuccess: (data) => {
-      queryClient.setQueryData(['boards', 'userId', user._id], (oldData: BoardType[]) => {
-        if (!oldData) return oldData
-        return oldData.map((board) => {
-          if (board._id === data._id) return data
-          return board
-        })
-      })
-    }
-  })
-
-  const handleUnsetStarredBoard = (_id: BoardType['_id']) => {
-    unsetStarredBoardMutation.mutate({
-      _id,
-      starred: false,
-      starredAt: Date.now()
-    })
-  }
+  const { handleUnsetStarredBoard } = useUnsetStarredBoard(user)
 
   return (
     <Box>

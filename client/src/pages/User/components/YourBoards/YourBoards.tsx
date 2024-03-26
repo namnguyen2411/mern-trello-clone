@@ -23,6 +23,8 @@ import { Public, Lock, Close, StarRounded, StarOutlineRounded } from '@mui/icons
 import { BoardType } from 'src/types/board.type'
 import { UserType } from 'src/types/user.type'
 import boardAPI from 'src/apis/board.api'
+import useSetStarredBoard from 'src/hooks/useSetStarredBoard'
+import useUnsetStarredBoard from 'src/hooks/useUnsetStarredBoard'
 
 type YourBoardsProps = {
   user: UserType
@@ -45,6 +47,9 @@ export default function YourBoards({ user, boards }: YourBoardsProps) {
   const [hoverBoardId, setHoverBoardId] = useState('')
   const [hoverBoardStar, setHoverBoardStar] = useState('')
 
+  const { handleSetStarredBoard } = useSetStarredBoard(user)
+  const { handleUnsetStarredBoard } = useUnsetStarredBoard(user)
+
   const queryClient = useQueryClient()
   const createNewBoardMutation = useMutation({
     mutationFn: boardAPI.createNewBoard,
@@ -55,48 +60,6 @@ export default function YourBoards({ user, boards }: YourBoardsProps) {
       })
     }
   })
-
-  const setStarredBoardMutation = useMutation({
-    mutationFn: boardAPI.updateBoard,
-    onSuccess: (data) => {
-      queryClient.setQueryData(['boards', 'userId', user._id], (oldData: BoardType[]) => {
-        if (!oldData) return oldData
-        return oldData.map((board) => {
-          if (board._id === data._id) return data
-          return board
-        })
-      })
-    }
-  })
-
-  const unsetStarredBoardMutation = useMutation({
-    mutationFn: boardAPI.updateBoard,
-    onSuccess: (data) => {
-      queryClient.setQueryData(['boards', 'userId', user._id], (oldData: BoardType[]) => {
-        if (!oldData) return oldData
-        return oldData.map((board) => {
-          if (board._id === data._id) return data
-          return board
-        })
-      })
-    }
-  })
-
-  const handleSetStarredBoard = (_id: BoardType['_id']) => {
-    setStarredBoardMutation.mutate({
-      _id,
-      starred: true,
-      starredAt: Date.now()
-    })
-  }
-
-  const handleUnsetStarredBoard = (_id: BoardType['_id']) => {
-    unsetStarredBoardMutation.mutate({
-      _id,
-      starred: false,
-      starredAt: Date.now()
-    })
-  }
 
   const handleCloseCreateNewBoard = () => {
     setOpenCreateNewBoard(false)
@@ -134,7 +97,11 @@ export default function YourBoards({ user, boards }: YourBoardsProps) {
               bgcolor: (theme) =>
                 theme.palette.mode === 'light' ? theme.palette.background.paper : theme.palette.cardBg,
               '& .MuiSvgIcon-root': {
+                position: 'absolute',
                 fontSize: '24px',
+                bottom: 4,
+                transition: '0.2s',
+                cursor: 'pointer',
                 ':hover': { fontSize: '26px' }
               }
             }}
@@ -153,12 +120,8 @@ export default function YourBoards({ user, boards }: YourBoardsProps) {
                 onMouseEnter={() => setHoverBoardStar(_id)}
                 onMouseLeave={() => setHoverBoardStar('')}
                 fontSize='medium'
-                cursor='pointer'
                 sx={{
-                  position: 'absolute',
                   right: '16px',
-                  bottom: 4,
-                  transition: '0.2s',
                   color: (theme) => theme.trello.starIconColor
                 }}
               />
@@ -170,12 +133,8 @@ export default function YourBoards({ user, boards }: YourBoardsProps) {
                 onMouseEnter={() => setHoverBoardStar(_id)}
                 onMouseLeave={() => setHoverBoardStar('')}
                 fontSize='medium'
-                cursor='pointer'
                 sx={{
-                  position: 'absolute',
                   right: '16px',
-                  bottom: 4,
-                  transition: '0.2s',
                   color: (theme) => theme.trello.starIconColor
                 }}
               />
@@ -185,15 +144,8 @@ export default function YourBoards({ user, boards }: YourBoardsProps) {
               <StarOutlineRounded
                 onClick={() => handleSetStarredBoard(_id)}
                 fontSize='medium'
-                cursor='pointer'
                 sx={{
-                  p: '2px',
-                  position: 'absolute',
-                  right: hoverBoardId === _id ? '16px' : '-100%',
-                  bottom: 4,
-                  transition: '0.2s',
-                  '&:hover': { p: 0 },
-                  zIndex: 2
+                  right: hoverBoardId === _id ? '16px' : '-100%'
                 }}
               />
             )}
