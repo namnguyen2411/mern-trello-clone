@@ -18,7 +18,6 @@ class Http {
         const { url } = res.config
         if (url === authRoutes.signup || url === authRoutes.login) {
           const clonedProfile = { ...res.data }
-          delete clonedProfile.boardIds
           setProfileToLocalStorage(clonedProfile)
         } else if (url === authRoutes.logout) {
           clearLocalStorage()

@@ -16,6 +16,11 @@ import { ReactComponent as TrelloIcon } from 'src/assets/trello.svg'
 import ModeSelect from 'src/components/Header/components/ModeSelect'
 import Starred from './components/Starred'
 import Profile from './components/Profile'
+import useCreateNewBoard from 'src/hooks/useCreateNewBoard'
+import CreateNewBoardDialog from '../CreateNewBoardDialog'
+import { CreateNewBoardFormType } from '../CreateNewBoardDialog/CreateNewBoardDialog'
+import { UserType } from 'src/types/user.type'
+import { Link } from 'react-router-dom'
 
 type Props = { name?: string } & StackProps
 const STACK_SX_PROPS: Props = {
@@ -23,12 +28,28 @@ const STACK_SX_PROPS: Props = {
   alignItems: 'center'
 }
 
+const newBoardFormInitial: CreateNewBoardFormType = {
+  title: '',
+  type: 'public'
+}
+
 export default function Header() {
   const [searchValue, setSearchValue] = useState('')
+  const [openCreateNewBoard, setOpenCreateNewBoard] = useState(false)
+  const [createNewBoardForm, setCreateNewBoardForm] = useState<CreateNewBoardFormType>(newBoardFormInitial)
+
+  const user: UserType = localStorage.getItem('profile') ? JSON.parse(localStorage.getItem('profile') as string) : null
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchValue(event.target.value)
   }
+
+  const handleCloseCreateNewBoard = () => {
+    setOpenCreateNewBoard(false)
+    setCreateNewBoardForm(newBoardFormInitial)
+  }
+
+  const { handleSubmitCreateNewForm } = useCreateNewBoard(user._id, createNewBoardForm, handleCloseCreateNewBoard)
 
   return (
     <Stack
@@ -45,18 +66,28 @@ export default function Header() {
       {/* Left side */}
       <Stack {...STACK_SX_PROPS} gap={2}>
         {/* Logo */}
-        <Stack {...STACK_SX_PROPS} gap={0.5} color={'primary.main'} sx={{ cursor: 'pointer' }}>
-          <SvgIcon component={TrelloIcon} inheritViewBox fontSize='small' />
-          <Typography variant='body1' sx={{ fontWeight: 'bold', fontSize: '1.5rem' }}>
-            Trello
-          </Typography>
-        </Stack>
+        <Link to={`/u/${user._id}/boards`} style={{ textDecoration: 'none' }}>
+          <Stack {...STACK_SX_PROPS} gap={0.5} color={'primary.main'} sx={{ cursor: 'pointer' }}>
+            <SvgIcon component={TrelloIcon} inheritViewBox fontSize='small' />
+            <Typography variant='body1' sx={{ fontWeight: 'bold', fontSize: '1.5rem' }}>
+              Trello
+            </Typography>
+          </Stack>
+        </Link>
         {/* Starred dropdown */}
         <Starred />
         {/* Create button */}
-        <Button variant='contained' size='small' startIcon={<LibraryAdd />}>
+        <Button variant='contained' size='small' startIcon={<LibraryAdd />} onClick={() => setOpenCreateNewBoard(true)}>
           Create
         </Button>
+        {/* Create new board dialog */}
+        <CreateNewBoardDialog
+          openCreateNewBoard={openCreateNewBoard}
+          handleCloseCreateNewBoard={handleCloseCreateNewBoard}
+          createNewBoardForm={createNewBoardForm}
+          setCreateNewBoardForm={setCreateNewBoardForm}
+          handleSubmitCreateNewForm={handleSubmitCreateNewForm}
+        />
       </Stack>
 
       {/* Right side */}

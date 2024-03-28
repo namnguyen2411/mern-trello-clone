@@ -1,38 +1,17 @@
 import { useState } from 'react'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { Link, useNavigate } from 'react-router-dom'
-import {
-  Box,
-  Button,
-  Card,
-  CardContent,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogContentText,
-  DialogTitle,
-  FormControl,
-  ListItemIcon,
-  ListItemText,
-  MenuItem,
-  Select,
-  TextField,
-  Typography
-} from '@mui/material'
-import { Public, Lock, Close, StarRounded, StarOutlineRounded } from '@mui/icons-material'
+import { Link } from 'react-router-dom'
+import { Box, Card, CardContent, Typography } from '@mui/material'
+import { StarRounded, StarOutlineRounded } from '@mui/icons-material'
 import { BoardType } from 'src/types/board.type'
-import boardAPI from 'src/apis/board.api'
 import useSetStarredBoard from 'src/hooks/useSetStarredBoard'
 import useUnsetStarredBoard from 'src/hooks/useUnsetStarredBoard'
+import useCreateNewBoard from 'src/hooks/useCreateNewBoard'
+import CreateNewBoardDialog from 'src/components/CreateNewBoardDialog'
+import { CreateNewBoardFormType } from 'src/components/CreateNewBoardDialog/CreateNewBoardDialog'
 
 type YourBoardsProps = {
   userId: string
   boards: BoardType[]
-}
-
-type CreateNewBoardFormType = {
-  title: string
-  type: BoardType['type']
 }
 
 const newBoardFormInitial: CreateNewBoardFormType = {
@@ -45,43 +24,16 @@ export default function YourBoards({ userId, boards }: YourBoardsProps) {
   const [createNewBoardForm, setCreateNewBoardForm] = useState<CreateNewBoardFormType>(newBoardFormInitial)
   const [hoverBoardId, setHoverBoardId] = useState('')
   const [hoverBoardStar, setHoverBoardStar] = useState('')
-  const navigate = useNavigate()
 
   const { handleSetStarredBoard } = useSetStarredBoard(userId)
   const { handleUnsetStarredBoard } = useUnsetStarredBoard(userId)
-
-  const queryClient = useQueryClient()
-  const createNewBoardMutation = useMutation({
-    mutationFn: boardAPI.createNewBoard,
-    onSuccess: (data) => {
-      queryClient.setQueryData(['boards', 'userId', userId], (oldData: BoardType[]) => {
-        if (!oldData) return oldData
-        return [...oldData, data]
-      })
-
-      handleCloseCreateNewBoard()
-      navigate(`/b/${data._id}/${data.slug}`, {
-        state: {
-          from: 'create-new-board'
-        }
-      })
-    }
-  })
 
   const handleCloseCreateNewBoard = () => {
     setOpenCreateNewBoard(false)
     setCreateNewBoardForm(newBoardFormInitial)
   }
 
-  const handleSubmitCreateNewForm = () => {
-    createNewBoardMutation.mutate({
-      title: createNewBoardForm.title,
-      type: createNewBoardForm.type,
-      ownerId: userId
-    })
-
-    handleCloseCreateNewBoard()
-  }
+  const { handleSubmitCreateNewForm } = useCreateNewBoard(userId, createNewBoardForm, handleCloseCreateNewBoard)
 
   return (
     <Box>
@@ -195,97 +147,13 @@ export default function YourBoards({ userId, boards }: YourBoardsProps) {
           </CardContent>
         </Card>
         {/* Create new board dialog */}
-        <Dialog
-          sx={{
-            '& .MuiPaper-root': {
-              width: '360px'
-            }
-          }}
-          open={openCreateNewBoard}
-          onClose={handleCloseCreateNewBoard}
-        >
-          {/* Dialog title */}
-          <DialogTitle marginBottom={3} display='flex' justifyContent='space-between' alignItems='center'>
-            Create board
-            <Close
-              fontSize='medium'
-              onClick={handleCloseCreateNewBoard}
-              cursor='pointer'
-              sx={{ padding: 0.5, '&:hover': { bgcolor: 'rgba(0, 0, 0, 0.08)' } }}
-            />
-          </DialogTitle>
-          <DialogContent>
-            {/* Enter board title */}
-            <Box marginBottom={2}>
-              <DialogContentText color='text.primary'>Board title (required)</DialogContentText>
-              <TextField
-                value={createNewBoardForm.title}
-                onChange={(e) => setCreateNewBoardForm({ ...createNewBoardForm, title: e.target.value })}
-                autoFocus
-                fullWidth
-                margin='dense'
-                name='title'
-                type='text'
-                variant='outlined'
-                sx={{
-                  '& .MuiInputBase-input': {
-                    py: 1
-                  }
-                }}
-              />
-            </Box>
-            {/* Select board type */}
-            <Box>
-              <FormControl fullWidth>
-                <DialogContentText mb={1} color='text.primary'>
-                  Board type
-                </DialogContentText>
-                <Select
-                  value={createNewBoardForm.type}
-                  onChange={(e) =>
-                    setCreateNewBoardForm({ ...createNewBoardForm, type: e.target.value as BoardType['type'] })
-                  }
-                  name='type'
-                  defaultValue='public'
-                  sx={{
-                    '& .MuiSelect-select': {
-                      py: 1,
-                      display: 'flex',
-                      alignItems: 'center'
-                    },
-                    '& .MuiListItemIcon-root': {
-                      minWidth: '36px'
-                    }
-                  }}
-                >
-                  <MenuItem value='public'>
-                    <ListItemIcon>
-                      <Public fontSize='small' />
-                    </ListItemIcon>
-                    <ListItemText>Public</ListItemText>
-                  </MenuItem>
-                  <MenuItem value='private'>
-                    <ListItemIcon>
-                      <Lock fontSize='small' />
-                    </ListItemIcon>
-                    <ListItemText>Private</ListItemText>
-                  </MenuItem>
-                </Select>
-              </FormControl>
-            </Box>
-          </DialogContent>
-          {/* Dialog actions */}
-          <DialogActions>
-            <Button
-              type='submit'
-              variant='contained'
-              onClick={handleSubmitCreateNewForm}
-              disabled={!createNewBoardForm.title.trim()}
-            >
-              Create
-            </Button>
-          </DialogActions>
-        </Dialog>
+        <CreateNewBoardDialog
+          openCreateNewBoard={openCreateNewBoard}
+          handleCloseCreateNewBoard={handleCloseCreateNewBoard}
+          createNewBoardForm={createNewBoardForm}
+          setCreateNewBoardForm={setCreateNewBoardForm}
+          handleSubmitCreateNewForm={handleSubmitCreateNewForm}
+        />
       </Box>
     </Box>
   )
