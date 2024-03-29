@@ -1,8 +1,15 @@
 import { useState, MouseEvent } from 'react'
-import { ExpandMore, ContentCut, Cloud } from '@mui/icons-material'
-import { Box, Button, Menu, MenuItem, ListItemIcon, ListItemText, Typography, Divider } from '@mui/material'
+import { Link } from 'react-router-dom'
+import { ExpandMore, StarRounded } from '@mui/icons-material'
+import { Box, Button, Menu, MenuItem, ListItemIcon, ListItemText, Typography } from '@mui/material'
+import { BoardType } from 'src/types/board.type'
+import starred from 'src/assets/starred.svg'
 
-export default function Starred() {
+type StarredProps = {
+  starredBoards: BoardType[]
+}
+
+export default function Starred({ starredBoards }: StarredProps) {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
   const open = Boolean(anchorEl)
   const handleClick = (event: MouseEvent<HTMLButtonElement>) => {
@@ -37,23 +44,53 @@ export default function Starred() {
         MenuListProps={{
           'aria-labelledby': 'button-starred'
         }}
+        sx={{
+          mt: 1
+        }}
       >
-        <MenuItem>
-          <ListItemIcon>
-            <ContentCut fontSize='small' />
-          </ListItemIcon>
-          <ListItemText>Cut</ListItemText>
-          <Typography variant='body2' color='text.secondary'>
-            ⌘X
-          </Typography>
-        </MenuItem>
-        <Divider />
-        <MenuItem>
-          <ListItemIcon>
-            <Cloud fontSize='small' />
-          </ListItemIcon>
-          <ListItemText>Web Clipboard</ListItemText>
-        </MenuItem>
+        {starredBoards.length > 0 &&
+          starredBoards.map((board) => (
+            <Link
+              to={`b/${board._id}/${board.slug}`}
+              style={{ textDecoration: 'none', color: 'inherit' }}
+              key={board._id}
+            >
+              <MenuItem onClick={handleClose} sx={{ alignItems: 'flex-start', gap: 1.5, pr: 0, py: 1 }}>
+                <ListItemText
+                  sx={{
+                    '& .MuiTypography-root': {
+                      maxWidth: '196px',
+                      overflow: 'clip',
+                      textOverflow: 'ellipsis',
+                      display: '-webkit-box',
+                      WebkitBoxOrient: 'horizontal'
+                    }
+                  }}
+                >
+                  {board.title}
+                </ListItemText>
+                <ListItemIcon>
+                  <StarRounded
+                    fontSize='small'
+                    sx={{
+                      color: (theme) => theme.trello.starIconColor
+                    }}
+                  />
+                </ListItemIcon>
+              </MenuItem>
+            </Link>
+          ))}
+
+        {starredBoards.length === 0 && (
+          <Box width='300px' p='12px' bgcolor='primary.100' borderRadius={1}>
+            <Box>
+              <img src={starred} />
+            </Box>
+            <Typography color='text.secondary' textAlign='center'>
+              Star important boards to access them quickly and easily.
+            </Typography>
+          </Box>
+        )}
       </Menu>
     </Box>
   )

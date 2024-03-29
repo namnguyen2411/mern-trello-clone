@@ -1,10 +1,9 @@
 import { useLocation, useParams } from 'react-router-dom'
-import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { Box, Container } from '@mui/material'
 import SideBar from './components/SideBar'
 import YourBoards from './components/YourBoards'
 import StarredBoards from './components/StarredBoards'
-import boardAPI from 'src/apis/board.api'
+import useQueryBoards from 'src/hooks/useQueryBoards'
 
 export default function User() {
   const params = useParams()
@@ -15,15 +14,7 @@ export default function User() {
     console.log(locationState?.message)
   }
 
-  const queryclient = useQueryClient()
-  const boardsByOwnerId = useQuery({
-    queryKey: ['boards', 'userId', userId],
-    queryFn: () => boardAPI.getBoardsByOwnerId(userId),
-    enabled: !!userId
-  })
-
-  const boardsData = boardsByOwnerId.data || []
-  queryclient.setQueryData(['boards', 'userId', userId], boardsData)
+  const boardsData = useQueryBoards(userId)
   const starredBoards = boardsData
     .filter((board) => board.starred)
     .sort((a, b) => (a.starredAt as number) - (b.starredAt as number))

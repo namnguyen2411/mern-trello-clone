@@ -21,6 +21,7 @@ import CreateNewBoardDialog from '../CreateNewBoardDialog'
 import { CreateNewBoardFormType } from '../CreateNewBoardDialog/CreateNewBoardDialog'
 import { UserType } from 'src/types/user.type'
 import { Link } from 'react-router-dom'
+import useQueryBoards from 'src/hooks/useQueryBoards'
 
 type Props = { name?: string } & StackProps
 const STACK_SX_PROPS: Props = {
@@ -34,11 +35,16 @@ const newBoardFormInitial: CreateNewBoardFormType = {
 }
 
 export default function Header() {
+  const user: UserType = localStorage.getItem('profile') ? JSON.parse(localStorage.getItem('profile') as string) : null
+
   const [searchValue, setSearchValue] = useState('')
   const [openCreateNewBoard, setOpenCreateNewBoard] = useState(false)
   const [createNewBoardForm, setCreateNewBoardForm] = useState<CreateNewBoardFormType>(newBoardFormInitial)
 
-  const user: UserType = localStorage.getItem('profile') ? JSON.parse(localStorage.getItem('profile') as string) : null
+  const boardsData = useQueryBoards(user._id)
+  const starredBoards = boardsData
+    .filter((board) => board.starred)
+    .sort((a, b) => (a.starredAt as number) - (b.starredAt as number))
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchValue(event.target.value)
@@ -75,7 +81,7 @@ export default function Header() {
           </Stack>
         </Link>
         {/* Starred dropdown */}
-        <Starred />
+        <Starred starredBoards={starredBoards} />
         {/* Create button */}
         <Button variant='contained' size='small' startIcon={<LibraryAdd />} onClick={() => setOpenCreateNewBoard(true)}>
           Create
