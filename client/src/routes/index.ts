@@ -6,7 +6,9 @@ export const publicRoutes = {
 }
 
 export const privateRoutes = {
-  boards: '/boards'
+  boardDetails: '/b/:boardId/:slug',
+  userBoards: '/u/:userId/boards',
+  userProfile: '/u/:userId/profile'
 }
 
 const userBaseUrl = '/users'

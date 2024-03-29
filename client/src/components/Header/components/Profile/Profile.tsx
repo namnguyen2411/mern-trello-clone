@@ -1,8 +1,13 @@
 import { useState, MouseEvent } from 'react'
-import { SwitchAccount, Logout, AccountCircle } from '@mui/icons-material'
+import { Logout, AccountCircle } from '@mui/icons-material'
 import { Box, Tooltip, IconButton, Avatar, Menu, MenuItem, Divider, ListItemIcon } from '@mui/material'
+import { Link } from 'react-router-dom'
 
-export default function Profile() {
+type ProfileProps = {
+  userId: string
+}
+
+export default function Profile({ userId }: ProfileProps) {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
   const open = Boolean(anchorEl)
   const handleClick = (event: MouseEvent<HTMLButtonElement>) => {
@@ -29,7 +34,6 @@ export default function Profile() {
               height: 30
             }}
             alt='avatar'
-            src='https://mui.com/static/images/avatar/1.jpg'
           />
         </IconButton>
       </Tooltip>
@@ -45,19 +49,15 @@ export default function Profile() {
           marginTop: 1.75
         }}
       >
-        <MenuItem>
-          <ListItemIcon>
-            <AccountCircle />
-          </ListItemIcon>
-          Profile
-        </MenuItem>
+        <Link to={`u/${userId}/profile`} style={{ textDecoration: 'none', color: 'inherit' }}>
+          <MenuItem>
+            <ListItemIcon>
+              <AccountCircle />
+            </ListItemIcon>
+            Profile
+          </MenuItem>
+        </Link>
         <Divider />
-        <MenuItem>
-          <ListItemIcon>
-            <SwitchAccount fontSize='medium' />
-          </ListItemIcon>
-          Switch accounts
-        </MenuItem>
         <MenuItem>
           <ListItemIcon>
             <Logout fontSize='medium' />

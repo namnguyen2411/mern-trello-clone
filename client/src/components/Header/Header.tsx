@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Link, useParams } from 'react-router-dom'
 import { LibraryAdd, Search, Close, NotificationsNone, HelpOutline } from '@mui/icons-material'
 import {
   Badge,
@@ -11,16 +12,13 @@ import {
   Typography,
   StackProps
 } from '@mui/material'
-
 import { ReactComponent as TrelloIcon } from 'src/assets/trello.svg'
 import ModeSelect from 'src/components/Header/components/ModeSelect'
 import Starred from './components/Starred'
 import Profile from './components/Profile'
-import useCreateNewBoard from 'src/hooks/useCreateNewBoard'
 import CreateNewBoardDialog from '../CreateNewBoardDialog'
 import { CreateNewBoardFormType } from '../CreateNewBoardDialog/CreateNewBoardDialog'
-import { UserType } from 'src/types/user.type'
-import { Link } from 'react-router-dom'
+import useCreateNewBoard from 'src/hooks/useCreateNewBoard'
 import useQueryBoards from 'src/hooks/useQueryBoards'
 
 type Props = { name?: string } & StackProps
@@ -35,13 +33,14 @@ const newBoardFormInitial: CreateNewBoardFormType = {
 }
 
 export default function Header() {
-  const user: UserType = localStorage.getItem('profile') ? JSON.parse(localStorage.getItem('profile') as string) : null
+  const params = useParams()
+  const userId = params.userId as string
 
   const [searchValue, setSearchValue] = useState('')
   const [openCreateNewBoard, setOpenCreateNewBoard] = useState(false)
   const [createNewBoardForm, setCreateNewBoardForm] = useState<CreateNewBoardFormType>(newBoardFormInitial)
 
-  const boardsData = useQueryBoards(user._id)
+  const boardsData = useQueryBoards(userId)
   const starredBoards = boardsData
     .filter((board) => board.starred)
     .sort((a, b) => (a.starredAt as number) - (b.starredAt as number))
@@ -55,7 +54,7 @@ export default function Header() {
     setCreateNewBoardForm(newBoardFormInitial)
   }
 
-  const { handleSubmitCreateNewForm } = useCreateNewBoard(user._id, createNewBoardForm, handleCloseCreateNewBoard)
+  const { handleSubmitCreateNewForm } = useCreateNewBoard(userId, createNewBoardForm, handleCloseCreateNewBoard)
 
   return (
     <Stack
@@ -72,7 +71,7 @@ export default function Header() {
       {/* Left side */}
       <Stack {...STACK_SX_PROPS} gap={2}>
         {/* Logo */}
-        <Link to={`/u/${user._id}/boards`} style={{ textDecoration: 'none' }}>
+        <Link to={`/u/${userId}/boards`} style={{ textDecoration: 'none' }}>
           <Stack {...STACK_SX_PROPS} gap={0.5} color={'primary.main'} sx={{ cursor: 'pointer' }}>
             <SvgIcon component={TrelloIcon} inheritViewBox fontSize='small' />
             <Typography variant='body1' sx={{ fontWeight: 'bold', fontSize: '1.5rem' }}>
@@ -134,7 +133,7 @@ export default function Header() {
           <HelpOutline color='primary' sx={{ cursor: 'pointer' }} />
         </Tooltip>
         {/* Profile */}
-        <Profile />
+        <Profile userId={userId} />
       </Stack>
     </Stack>
   )
