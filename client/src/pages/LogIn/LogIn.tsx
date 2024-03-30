@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useContext, useState } from 'react'
 import { useMutation } from '@tanstack/react-query'
 import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -21,15 +21,18 @@ import { logInSchema, LogInSchemaType } from 'src/utils/schema'
 import authAPI from 'src/apis/auth.api'
 import { UserType } from 'src/types/user.type'
 import { publicRoutes } from 'src/routes'
+import authContext from 'src/contexts/authContext'
 
 export default function SignIn() {
-  const [showPassword, setShowPassword] = useState(false)
+  const { setIsAuthenticated } = useContext(authContext)
   const navigate = useNavigate()
+  const [showPassword, setShowPassword] = useState(false)
 
   const logInMutation = useMutation({
     mutationFn: authAPI.login,
     onSuccess: (data: UserType) => {
       reset()
+      setIsAuthenticated(true)
       navigate(`/u/${data.username ? data.username : data._id}/boards`)
     },
     onError: (error) => {

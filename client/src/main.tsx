@@ -7,6 +7,7 @@ import { ConfirmProvider } from 'material-ui-confirm'
 import { theme } from './theme.ts'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
+import { AuthProvider } from './contexts/authContext.tsx'
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -36,7 +37,9 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
       <CssVarsProvider theme={theme}>
         <ConfirmProvider defaultOptions={CONFIRM_PROVIDER_DEFAULT_OPTIONS}>
           <CssBaseline />
-          <App />
+          <AuthProvider>
+            <App />
+          </AuthProvider>
           <ReactQueryDevtools initialIsOpen={false} />
         </ConfirmProvider>
       </CssVarsProvider>
