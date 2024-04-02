@@ -4,7 +4,8 @@ const env = {
   APP_PORT: process.env.APP_PORT,
   BUILD_MODE: process.env.BUILD_MODE,
   MONGODB_URI: process.env.MONGODB_URI,
-  DB_NAME: process.env.DB_NAME
+  DB_NAME: process.env.DB_NAME,
+  JWT_SECRET: process.env.JWT_SECRET
 }
 
 export default env

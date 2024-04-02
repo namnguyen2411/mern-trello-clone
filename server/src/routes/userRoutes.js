@@ -24,6 +24,11 @@ router.post('/login', userValidation.createNew, userController.login)
 // DESCRIPTION: Update a user
 // router.put('/:id', userValidation.update, userController.update)
 
+// METHOD: POST
+// ENDPOINT: /api/users/logout
+// DESCRIPTION: User logout
+router.post('/logout', userController.logout)
+
 // METHOD: DELETE
 // ENDPOINT: /api/users/:id
 // DESCRIPTION: Delete a user

@@ -17,9 +17,18 @@ const login = async (req, res, next) => {
   }
 }
 
+const logout = async (req, res, next) => {
+  try {
+    res.status(StatusCodes.OK).json(await userService.logout(req.headers.authorization))
+  } catch (error) {
+    next(error)
+  }
+}
+
 const boardController = {
   createNew,
-  login
+  login,
+  logout
 }
 
 export default boardController
