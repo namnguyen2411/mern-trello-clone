@@ -1,10 +1,6 @@
 import { Box, Container, useColorScheme } from '@mui/material'
 import { Outlet } from 'react-router-dom'
-import { ModeType } from 'src/types/mode.type'
 import trellobg from 'src/assets/trellobg.png'
-
-const prevMode = localStorage.getItem('mui-mode') ? (localStorage.getItem('mui-mode') as ModeType) : 'system'
-localStorage.setItem('prevMode', prevMode as string)
 
 export default function AuthLayout() {
   const { setMode } = useColorScheme()

@@ -1,15 +1,34 @@
-import { useState, MouseEvent } from 'react'
+import { useState, MouseEvent, useContext } from 'react'
 import { Logout, AccountCircle } from '@mui/icons-material'
-import { Box, Tooltip, IconButton, Avatar, Menu, MenuItem, Divider, ListItemIcon } from '@mui/material'
+import { Box, Tooltip, IconButton, Avatar, Menu, MenuItem, Divider, ListItemIcon, useColorScheme } from '@mui/material'
 import { Link } from 'react-router-dom'
+import { useMutation } from '@tanstack/react-query'
+import authAPI from 'src/apis/auth.api'
+import authContext from 'src/contexts/authContext'
 
 type ProfileProps = {
   userId: string
 }
 
 export default function Profile({ userId }: ProfileProps) {
+  const { mode } = useColorScheme()
+  const { reset, profile } = useContext(authContext)
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
   const open = Boolean(anchorEl)
+
+  const logoutMutation = useMutation({
+    mutationFn: authAPI.logout,
+    onSuccess: () => {
+      setAnchorEl(null)
+      reset()
+      localStorage.setItem('prevMode', mode as string)
+    }
+  })
+
+  const handleLogout = () => {
+    logoutMutation.mutate()
+  }
+
   const handleClick = (event: MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget)
   }
@@ -19,7 +38,7 @@ export default function Profile({ userId }: ProfileProps) {
 
   return (
     <Box>
-      <Tooltip title='Account'>
+      <Tooltip title={profile?.username ? `${profile.username} (${profile.email})` : profile?.email}>
         <IconButton
           onClick={handleClick}
           size='small'
@@ -52,13 +71,13 @@ export default function Profile({ userId }: ProfileProps) {
         <Link to={`u/${userId}/profile`} style={{ textDecoration: 'none', color: 'inherit' }}>
           <MenuItem>
             <ListItemIcon>
-              <AccountCircle />
+              <AccountCircle fontSize='medium' />
             </ListItemIcon>
             Profile
           </MenuItem>
         </Link>
         <Divider />
-        <MenuItem>
+        <MenuItem onClick={handleLogout}>
           <ListItemIcon>
             <Logout fontSize='medium' />
           </ListItemIcon>

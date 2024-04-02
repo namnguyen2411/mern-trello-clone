@@ -1,13 +1,15 @@
-import { useParams } from 'react-router-dom'
+import { useContext } from 'react'
 import { Box, Container } from '@mui/material'
 import SideBar from './components/SideBar'
 import YourBoards from './components/YourBoards'
 import StarredBoards from './components/StarredBoards'
 import useQueryBoards from 'src/hooks/useQueryBoards'
+import authContext from 'src/contexts/authContext'
+import { UserType } from 'src/types/user.type'
 
 export default function User() {
-  const params = useParams()
-  const userId = params.userId as string
+  const { isAuthenticated, profile } = useContext(authContext)
+  const userId = isAuthenticated ? (profile as UserType)._id : ''
 
   const boardsData = useQueryBoards(userId)
   const starredBoards = boardsData

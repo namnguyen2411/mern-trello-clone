@@ -1,8 +1,8 @@
 import { UserType } from 'src/types/user.type'
 
 // access_token
-// const getAccessTokenFromLocalStorage = (): string | null => localStorage.getItem('access_token')
-// const setAccessTokenToLocalStorage = (token: string) => localStorage.setItem('access_token', token)
+const getAccessTokenFromLocalStorage = (): string | null => localStorage.getItem('access_token')
+const setAccessTokenToLocalStorage = (token: string) => localStorage.setItem('access_token', token)
 
 const getProfileFromLocalStorage = (): UserType | null => {
   const profile = localStorage.getItem('profile')
@@ -13,7 +13,13 @@ const setProfileToLocalStorage = (profile: UserType) => localStorage.setItem('pr
 
 const clearLocalStorage = () => {
   localStorage.removeItem('profile')
-  // localStorage.removeItem('access_token')
+  localStorage.removeItem('access_token')
 }
 
-export { getProfileFromLocalStorage, setProfileToLocalStorage, clearLocalStorage }
+export {
+  getProfileFromLocalStorage,
+  setProfileToLocalStorage,
+  getAccessTokenFromLocalStorage,
+  setAccessTokenToLocalStorage,
+  clearLocalStorage
+}

@@ -9,11 +9,11 @@ const SignUp = lazy(() => import('./pages/SignUp'))
 const LogIn = lazy(() => import('./pages/LogIn'))
 const User = lazy(() => import('./pages/User'))
 const Profile = lazy(() => import('./pages/Profile'))
-import { publicRoutes, privateRoutes } from './routes'
+import { publicRoutes } from './routes'
 import AuthContext from './contexts/authContext'
 
 function App() {
-  const { isAuthenticated } = useContext(AuthContext)
+  const { isAuthenticated, profile } = useContext(AuthContext)
 
   const router = createBrowserRouter(
     createRoutesFromElements(
@@ -23,7 +23,7 @@ function App() {
             path='/'
             element={
               isAuthenticated ? (
-                <Navigate to={privateRoutes.userBoards} />
+                <Navigate to={`/u/${profile?._id}/boards`} />
               ) : (
                 <Suspense>
                   <LogIn />
@@ -35,7 +35,7 @@ function App() {
             path={publicRoutes.login}
             element={
               isAuthenticated ? (
-                <Navigate to={privateRoutes.userBoards} />
+                <Navigate to={`/u/${profile?._id}/boards`} />
               ) : (
                 <Suspense>
                   <LogIn />
@@ -47,7 +47,7 @@ function App() {
             path={publicRoutes.signup}
             element={
               isAuthenticated ? (
-                <Navigate to={privateRoutes.userBoards} />
+                <Navigate to={`/u/${profile?._id}/boards`} />
               ) : (
                 <Suspense>
                   <SignUp />

@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import { Link, useParams } from 'react-router-dom'
+import { useContext, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { LibraryAdd, Search, Close, NotificationsNone, HelpOutline } from '@mui/icons-material'
 import {
   Badge,
@@ -20,6 +20,7 @@ import CreateNewBoardDialog from '../CreateNewBoardDialog'
 import { CreateNewBoardFormType } from '../CreateNewBoardDialog/CreateNewBoardDialog'
 import useCreateNewBoard from 'src/hooks/useCreateNewBoard'
 import useQueryBoards from 'src/hooks/useQueryBoards'
+import authContext from 'src/contexts/authContext'
 
 type Props = { name?: string } & StackProps
 const STACK_SX_PROPS: Props = {
@@ -33,8 +34,8 @@ const newBoardFormInitial: CreateNewBoardFormType = {
 }
 
 export default function Header() {
-  const params = useParams()
-  const userId = params.userId as string
+  const { profile } = useContext(authContext)
+  const userId = profile?._id as string
 
   const [searchValue, setSearchValue] = useState('')
   const [openCreateNewBoard, setOpenCreateNewBoard] = useState(false)

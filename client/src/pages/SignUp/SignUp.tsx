@@ -24,7 +24,7 @@ import { publicRoutes } from 'src/routes'
 import authContext from 'src/contexts/authContext'
 
 export default function SignUp() {
-  const { setIsAuthenticated } = useContext(authContext)
+  const { setIsAuthenticated, setProfile } = useContext(authContext)
   const navigate = useNavigate()
 
   const [showPassword, setShowPassword] = useState({
@@ -37,6 +37,7 @@ export default function SignUp() {
     onSuccess: (data: UserType) => {
       reset()
       setIsAuthenticated(true)
+      setProfile(data)
       navigate(`/u/${data.username ? data.username : data._id}/boards`)
     },
     onError: (error) => {
