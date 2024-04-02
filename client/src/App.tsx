@@ -1,5 +1,7 @@
 import { lazy, Suspense, useContext } from 'react'
 import { createBrowserRouter, createRoutesFromElements, Navigate, Route, RouterProvider } from 'react-router-dom'
+import { ToastContainer } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
 import MainLayout from './layouts/MainLayout'
 import AuthLayout from './layouts/AuthLayout'
 const Board = lazy(() => import('./pages/Board'))
@@ -100,6 +102,15 @@ function App() {
 
   return (
     <div className='App'>
+      <ToastContainer
+        newestOnTop
+        closeOnClick
+        pauseOnHover={false}
+        closeButton={false}
+        hideProgressBar={true}
+        style={{ marginTop: '40px' }}
+        toastStyle={{ backgroundColor: '#1976d2', color: 'white' }}
+      />
       <RouterProvider router={router} />
     </div>
   )

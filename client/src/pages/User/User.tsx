@@ -1,4 +1,4 @@
-import { useLocation, useParams } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 import { Box, Container } from '@mui/material'
 import SideBar from './components/SideBar'
 import YourBoards from './components/YourBoards'
@@ -8,11 +8,6 @@ import useQueryBoards from 'src/hooks/useQueryBoards'
 export default function User() {
   const params = useParams()
   const userId = params.userId as string
-  const locationState = useLocation().state
-
-  if (locationState?.from === 'delete-board') {
-    console.log(locationState?.message)
-  }
 
   const boardsData = useQueryBoards(userId)
   const starredBoards = boardsData

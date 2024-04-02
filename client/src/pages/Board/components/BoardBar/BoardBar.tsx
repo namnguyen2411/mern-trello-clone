@@ -1,6 +1,7 @@
 import { useState, MouseEvent } from 'react'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useConfirm } from 'material-ui-confirm'
+import { toast } from 'react-toastify'
 import { Public, Lock, Delete } from '@mui/icons-material'
 import { Chip, Tooltip, Box, Menu, MenuItem, ListItemIcon, Button, TextField, ListItemText } from '@mui/material'
 import boardAPI from 'src/apis/board.api'
@@ -66,6 +67,11 @@ export default function BoardBar({ boardTitle, boardType, boardId, userId }: Boa
           message: data.message
         }
       })
+
+      toast.success(data.message, {
+        position: 'top-right',
+        autoClose: 4000
+      })
     }
   })
 
@@ -73,7 +79,7 @@ export default function BoardBar({ boardTitle, boardType, boardId, userId }: Boa
   const handleDeleteBoard = () => {
     confirm({
       title: 'Delete Board',
-      description: 'This action will permanently delete this board. Are you sure?',
+      description: 'This action will permanently delete this board and all of its columns and cards. Are you sure?',
       confirmationButtonProps: {
         color: 'error',
         variant: 'contained'
@@ -207,7 +213,12 @@ export default function BoardBar({ boardTitle, boardType, boardId, userId }: Boa
       >
         <Box display='flex' alignItems='center'>
           <Tooltip title='Delete board'>
-            <Delete sx={{ cursor: 'pointer' }} onClick={handleDeleteBoard} />
+            <Chip
+              sx={{ ...CHIP_SX_PROPS, cursor: 'pointer' }}
+              icon={<Delete />}
+              label='Delete'
+              onClick={handleDeleteBoard}
+            />
           </Tooltip>
         </Box>
       </Box>
