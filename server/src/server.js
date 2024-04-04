@@ -21,9 +21,15 @@ const startServer = () => {
 
   app.use(errorHandling)
 
-  app.listen(env.APP_PORT, () => {
-    console.info(`Connected to MongoDB and server is running at: http://localhost:${env.APP_PORT}`)
-  })
+  if (env.BUILD_MODE === 'production') {
+    app.listen(process.env.PORT, () => {
+      console.info(`Connected to MongoDB and server is running at port: ${process.env.PORT}`)
+    })
+  } else {
+    app.listen(env.APP_PORT, () => {
+      console.info(`Connected to MongoDB and server is running at: http://localhost:${env.APP_PORT}`)
+    })
+  }
 }
 
 connectDB()

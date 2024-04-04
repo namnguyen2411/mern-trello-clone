@@ -1,5 +1,5 @@
 import { StatusCodes } from 'http-status-codes'
-import cloneDeep from 'lodash/clonedeep.js'
+import cloneDeep from 'lodash/cloneDeep.js'
 import { slugify } from '#src/utils/formatter.js'
 import boardModel from '#src/models/boardModel.js'
 import columnModel from '#src/models/columnModel.js'
@@ -8,9 +8,6 @@ import ApiError from '#src/utils/ApiError.js'
 
 const createNew = async (data) => {
   const updatedData = { ...data, slug: slugify(data.title) }
-  // const newBoardId = await boardModel.createNew(updatedData)
-
-  // return await boardModel.findOneById(newBoardId.insertedId)
   return await boardModel.createNew(updatedData)
 }
 
