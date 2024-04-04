@@ -11,6 +11,7 @@ const User = lazy(() => import('./pages/User'))
 const Profile = lazy(() => import('./pages/Profile'))
 import { publicRoutes } from './routes'
 import AuthContext from './contexts/authContext'
+import './App.css'
 
 function App() {
   const { isAuthenticated, profile } = useContext(AuthContext)
