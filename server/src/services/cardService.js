@@ -17,9 +17,14 @@ const deleteCard = async (id) => {
   return await columnModel.pullFromCardOrderIds(foundedCard)
 }
 
+const update = async (id, data) => {
+  return await cardModel.update(id, data)
+}
+
 const cardService = {
   createNew,
-  deleteCard
+  deleteCard,
+  update
 }
 
 export default cardService

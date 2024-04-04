@@ -31,9 +31,24 @@ const deleteCard = async (req, res, next) => {
   }
 }
 
+const update = async (req, res, next) => {
+  const schema = Joi.object({
+    title: Joi.string().min(1).max(50).trim().strict(),
+    description: Joi.string().min(0).max(256).trim().strict()
+  })
+
+  try {
+    await schema.validateAsync(req.body, { abortEarly: false, allowUnknown: true })
+    next()
+  } catch (error) {
+    next(new ApiError(StatusCodes.UNPROCESSABLE_ENTITY, new Error(error).message))
+  }
+}
+
 const cardValidation = {
   createNew,
-  deleteCard
+  deleteCard,
+  update
 }
 
 export default cardValidation

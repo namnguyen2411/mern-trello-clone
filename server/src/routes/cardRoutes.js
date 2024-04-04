@@ -12,9 +12,7 @@ router.post('/', cardValidation.createNew, cardController.createNew)
 // METHOD: PUT
 // ENDPOINT: /api/cards/:id
 // DESCRIPTION: Update a card
-router.put('/:id', (req, res) => {
-  res.status(200).json({ message: 'Update a card' })
-})
+router.put('/:id', cardValidation.update, cardController.update)
 
 // METHOD: DELETE
 // ENDPOINT: /api/cards/:id

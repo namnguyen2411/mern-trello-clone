@@ -11,7 +11,7 @@ const CARD_SCHEMA = Joi.object({
   columnId: Joi.string().required().pattern(MONGODB_OBJECT_ID_RULE.rule).message(MONGODB_OBJECT_ID_RULE.message),
   title: Joi.string().required().min(3).max(50).trim().strict(),
   cover: Joi.string().optional(),
-  description: Joi.string().optional(),
+  description: Joi.string().default(''),
   createdAt: Joi.date().timestamp('javascript').default(Date.now),
   updatedAt: Joi.date().timestamp('javascript').default(null),
   _delete: Joi.boolean().default(false)

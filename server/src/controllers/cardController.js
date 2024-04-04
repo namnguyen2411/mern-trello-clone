@@ -17,9 +17,18 @@ const deleteCard = async (req, res, next) => {
   }
 }
 
+const update = async (req, res, next) => {
+  try {
+    res.status(StatusCodes.OK).json(await cardService.update(req.params.id, req.body))
+  } catch (error) {
+    next(error)
+  }
+}
+
 const cardController = {
   createNew,
-  deleteCard
+  deleteCard,
+  update
 }
 
 export default cardController
