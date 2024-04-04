@@ -2,6 +2,7 @@ import Joi from 'joi'
 import { ObjectId } from 'mongodb'
 import { BOARD_TYPE, MONGODB_OBJECT_ID_RULE } from '#src/utils/constants.js'
 import { getDB } from '#src/config/db.js'
+import userModel from './userModel.js'
 import columnModel from './columnModel.js'
 import cardModel from './cardModel.js'
 
@@ -31,10 +32,17 @@ const BOARD_SCHEMA = Joi.object({
 const createNew = async (data) => {
   try {
     const newBoard = await BOARD_SCHEMA.validateAsync(data, { abortEarly: false })
-
-    return await getDB()
+    const newBoardId = await getDB()
       .collection(BOARD_COLLECTION_NAME)
       .insertOne({ ...newBoard, ownerId: new ObjectId(newBoard.ownerId) })
+
+    const result = await boardModel.findOneById(newBoardId.insertedId)
+
+    await getDB()
+      .collection(userModel.USER_COLLECTION_NAME)
+      .findOneAndUpdate({ _id: new ObjectId(result.ownerId) }, { $push: { boardIds: new ObjectId(result._id) } })
+
+    return result
   } catch (error) {
     throw new Error(error)
   }

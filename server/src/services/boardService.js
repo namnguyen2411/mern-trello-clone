@@ -8,9 +8,10 @@ import ApiError from '#src/utils/ApiError.js'
 
 const createNew = async (data) => {
   const updatedData = { ...data, slug: slugify(data.title) }
-  const newBoardId = await boardModel.createNew(updatedData)
+  // const newBoardId = await boardModel.createNew(updatedData)
 
-  return await boardModel.findOneById(newBoardId.insertedId)
+  // return await boardModel.findOneById(newBoardId.insertedId)
+  return await boardModel.createNew(updatedData)
 }
 
 const findOneById = async (id) => {

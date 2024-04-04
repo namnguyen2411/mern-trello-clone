@@ -58,6 +58,7 @@ const deleteOneById = async (id) => {
 }
 
 const userModel = {
+  USER_COLLECTION_NAME,
   createNew,
   findOneById,
   findOneByEmail,
