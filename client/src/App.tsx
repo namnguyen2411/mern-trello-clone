@@ -4,12 +4,15 @@ import { ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 import MainLayout from './layouts/MainLayout'
 import AuthLayout from './layouts/AuthLayout'
+import AccountLayout from './layouts/AccountLayout'
 const Board = lazy(() => import('./pages/Board'))
 const SignUp = lazy(() => import('./pages/SignUp'))
 const LogIn = lazy(() => import('./pages/LogIn'))
 const User = lazy(() => import('./pages/User'))
-const Profile = lazy(() => import('./pages/Profile'))
-import { publicRoutes } from './routes'
+const Profile = lazy(() => import('./pages/Account/components/Profile'))
+const Security = lazy(() => import('./pages/Account/components/Security'))
+const NotFound = lazy(() => import('./pages/NotFound'))
+import { publicRoutes, accountRoutes } from './routes'
 import AuthContext from './contexts/authContext'
 import './App.css'
 
@@ -85,18 +88,33 @@ function App() {
           />
         </Route>
 
-        <Route
-          path='/u/:userId/profile'
-          element={
-            isAuthenticated ? (
-              <Suspense>
-                <Profile />
-              </Suspense>
-            ) : (
-              <Navigate to={publicRoutes.login} />
-            )
-          }
-        />
+        <Route element={<AccountLayout />}>
+          <Route
+            path={accountRoutes.profile}
+            element={
+              isAuthenticated ? (
+                <Suspense>
+                  <Profile />
+                </Suspense>
+              ) : (
+                <Navigate to={publicRoutes.login} />
+              )
+            }
+          />
+          <Route
+            path={accountRoutes.security}
+            element={
+              isAuthenticated ? (
+                <Suspense>
+                  <Security />
+                </Suspense>
+              ) : (
+                <Navigate to={publicRoutes.login} />
+              )
+            }
+          />
+          <Route path='*' element={<NotFound />} />
+        </Route>
       </>
     )
   )

@@ -17,3 +17,8 @@ export const authRoutes = {
   login: userBaseUrl + '/login',
   logout: userBaseUrl + '/logout'
 }
+
+export const accountRoutes = {
+  profile: '/profile',
+  security: '/security'
+}

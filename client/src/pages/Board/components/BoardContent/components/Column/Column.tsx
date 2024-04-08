@@ -238,9 +238,6 @@ export default function Column({ column }: ColumnProps) {
               <MenuItem onClick={toggleAddNewCardHandler}>
                 <ListItemText>Add new card</ListItemText>
               </MenuItem>
-              <MenuItem>
-                <ListItemText>Cut</ListItemText>
-              </MenuItem>
               <Divider />
               <MenuItem onClick={handleDeleteColumn}>
                 <ListItemText>Remove this column</ListItemText>

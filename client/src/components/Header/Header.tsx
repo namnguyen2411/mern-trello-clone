@@ -1,17 +1,7 @@
 import { useContext, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { LibraryAdd, Search, Close, NotificationsNone, HelpOutline } from '@mui/icons-material'
-import {
-  Badge,
-  Button,
-  InputAdornment,
-  Stack,
-  SvgIcon,
-  TextField,
-  Tooltip,
-  Typography,
-  StackProps
-} from '@mui/material'
+import { LibraryAdd, Search, Close } from '@mui/icons-material'
+import { Button, InputAdornment, Stack, SvgIcon, TextField, Typography, StackProps } from '@mui/material'
 import { ReactComponent as TrelloIcon } from 'src/assets/trello.svg'
 import ModeSelect from 'src/components/Header/components/ModeSelect'
 import Starred from './components/Starred'
@@ -123,18 +113,8 @@ export default function Header() {
         />
         {/* Mode Select */}
         <ModeSelect />
-        {/* Notifications */}
-        <Tooltip title='Notifications'>
-          <Badge color='error' variant='dot' sx={{ cursor: 'pointer' }}>
-            <NotificationsNone color='primary' />
-          </Badge>
-        </Tooltip>
-        {/* Help */}
-        <Tooltip title='Help' color='text.primary'>
-          <HelpOutline color='primary' sx={{ cursor: 'pointer' }} />
-        </Tooltip>
         {/* Profile */}
-        <Profile userId={userId} />
+        <Profile />
       </Stack>
     </Stack>
   )

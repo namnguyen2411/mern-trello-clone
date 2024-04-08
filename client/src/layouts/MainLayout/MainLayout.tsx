@@ -4,7 +4,7 @@ import { Outlet } from 'react-router-dom'
 import Header from 'src/components/Header'
 import { ModeType } from 'src/types/mode.type'
 
-export default function Board() {
+export default function MainLayout() {
   const { setMode } = useColorScheme()
 
   useEffect(() => {

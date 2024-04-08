@@ -5,12 +5,9 @@ import { Link } from 'react-router-dom'
 import { useMutation } from '@tanstack/react-query'
 import authAPI from 'src/apis/auth.api'
 import authContext from 'src/contexts/authContext'
+import { accountRoutes } from 'src/routes'
 
-type ProfileProps = {
-  userId: string
-}
-
-export default function Profile({ userId }: ProfileProps) {
+export default function Profile() {
   const { mode } = useColorScheme()
   const { reset, profile } = useContext(authContext)
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
@@ -68,7 +65,7 @@ export default function Profile({ userId }: ProfileProps) {
           marginTop: 1.75
         }}
       >
-        <Link to={`u/${userId}/profile`} style={{ textDecoration: 'none', color: 'inherit' }}>
+        <Link to={accountRoutes.profile} style={{ textDecoration: 'none', color: 'inherit' }}>
           <MenuItem>
             <ListItemIcon>
               <AccountCircle fontSize='medium' />
