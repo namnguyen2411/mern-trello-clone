@@ -10,7 +10,7 @@ const createNew = async (data) => {
   }
 
   const newUserId = await userModel.createNew(data)
-  const access_token = jwt.sign({ _id: newUserId }, env.JWT_SECRET, { expiresIn: '1d' })
+  const access_token = jwt.sign({ _id: newUserId }, env.JWT_SECRET, { expiresIn: '3d' })
   const result = await userModel.findOneById(newUserId.insertedId)
   delete result.password
 
@@ -18,7 +18,10 @@ const createNew = async (data) => {
 }
 
 const findOneById = async (id) => {
-  return await userModel.findOneById(id)
+  const result = await userModel.findOneById(id)
+  delete result.password
+
+  return result
 }
 
 const login = async (data) => {
@@ -41,11 +44,36 @@ const logout = async (token) => {
   return { message: 'Logout successfully' }
 }
 
+const update = async (id, data) => {
+  const result = await userModel.update(id, data)
+  delete result.password
+
+  return result
+}
+
+const changePassword = async (data) => {
+  const result = await userModel.findOneById(data._id)
+  if (!result) throw new ApiError(StatusCodes.UNAUTHORIZED, StatusCodes[StatusCodes.UNAUTHORIZED])
+
+  if (result.password !== data.password) {
+    throw new ApiError(StatusCodes.UNPROCESSABLE_ENTITY, 'Incorrect password')
+  } else if (result.password === data.newPassword) {
+    throw new ApiError(StatusCodes.UNPROCESSABLE_ENTITY, 'New password cannot be the same as current password')
+  }
+  await userModel.update(data._id, { password: data.newPassword })
+
+  return {
+    message: "You've updated your password"
+  }
+}
+
 const userService = {
   createNew,
   findOneById,
   login,
-  logout
+  logout,
+  update,
+  changePassword
 }
 
 export default userService

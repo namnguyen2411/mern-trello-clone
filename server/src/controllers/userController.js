@@ -25,10 +25,37 @@ const logout = async (req, res, next) => {
   }
 }
 
+const getProfile = async (req, res, next) => {
+  try {
+    res.status(StatusCodes.OK).json(await userService.findOneById(req.params.id))
+  } catch (error) {
+    next(error)
+  }
+}
+
+const update = async (req, res, next) => {
+  try {
+    res.status(StatusCodes.OK).json(await userService.update(req.params.id, req.body))
+  } catch (error) {
+    next(error)
+  }
+}
+
+const changePassword = async (req, res, next) => {
+  try {
+    res.status(StatusCodes.OK).json(await userService.changePassword(req.body))
+  } catch (error) {
+    next(error)
+  }
+}
+
 const boardController = {
   createNew,
   login,
-  logout
+  logout,
+  getProfile,
+  update,
+  changePassword
 }
 
 export default boardController

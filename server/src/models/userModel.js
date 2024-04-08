@@ -3,7 +3,7 @@ import { ObjectId } from 'mongodb'
 import { getDB } from '#src/config/db.js'
 import { MONGODB_OBJECT_ID_RULE, PASSWORD_RULE } from '#src/utils/constants.js'
 
-const INVALID_UPDATE_FIELDS = ['_id', 'createdAt']
+const INVALID_UPDATE_FIELDS = ['_id', 'email', 'createdAt']
 
 const USER_COLLECTION_NAME = 'users'
 const USER_SCHEMA = Joi.object({
@@ -13,6 +13,9 @@ const USER_SCHEMA = Joi.object({
   email: Joi.string().email().required().min(1).max(50).trim().strict(),
   password: Joi.string().required().pattern(PASSWORD_RULE.rule, PASSWORD_RULE.message).min(6).max(50).trim().strict(),
   username: Joi.string().optional(),
+  fullName: Joi.string().optional(),
+  avatar: Joi.string().optional(),
+  jobTitle: Joi.string().optional(),
   createdAt: Joi.date().timestamp('javascript').default(Date.now),
   updatedAt: Joi.date().timestamp('javascript').default(null)
 })
@@ -47,11 +50,22 @@ const findOneById = async (id) => {
   }
 }
 
-const deleteOneById = async (id) => {
+const update = async (id, data) => {
   try {
+    // remove invalid fields from data
+    Object.keys(data).forEach((fieldName) => {
+      if (INVALID_UPDATE_FIELDS.includes(fieldName)) {
+        delete data[fieldName]
+      }
+    })
+
     return await getDB()
       .collection(USER_COLLECTION_NAME)
-      .findOneAndDelete({ _id: new ObjectId(id) })
+      .findOneAndUpdate(
+        { _id: new ObjectId(id) },
+        { $set: { ...data, updatedAt: Date.now() } },
+        { returnDocument: 'after' }
+      )
   } catch (error) {
     throw new Error(error)
   }
@@ -62,7 +76,7 @@ const userModel = {
   createNew,
   findOneById,
   findOneByEmail,
-  deleteOneById
+  update
 }
 
 export default userModel
