@@ -5,5 +5,7 @@ export type UserType = {
   email: string
   boardId: BoardType['_id'][]
   username?: string
+  fullName?: string
   avatar?: string
+  jobTitle?: string
 }

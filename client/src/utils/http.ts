@@ -52,6 +52,11 @@ class Http {
           toast.error('Something went wrong, please try again later')
           clearLocalStorage()
         }
+        if (error.message === 'Network Error') {
+          toast.error('Internal server error, please try again later')
+          clearLocalStorage()
+          return Promise.reject(new Error('Internal server error'))
+        }
 
         return Promise.reject(error)
       }

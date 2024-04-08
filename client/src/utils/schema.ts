@@ -14,7 +14,12 @@ const schema = z.object({
     .regex(/^[a-zA-Z0-9]+$/, { message: 'Password must contain only letters and numbers' })
     .trim(),
   confirmPassword: z.string().trim(),
-  username: z.string().min(1).trim()
+  newPassword: z
+    .string()
+    .min(6, { message: 'Password must be at least 6 characters' })
+    .max(50, { message: 'Passwords must not exceed 50 characters' })
+    .regex(/^[a-zA-Z0-9]+$/, { message: 'Password must contain only letters and numbers' })
+    .trim()
 })
 
 const signUpSchema = schema.pick({ email: true, password: true, confirmPassword: true })
@@ -29,3 +34,12 @@ export type SignUpSchemaType = z.infer<typeof signUpSchemaRefined>
 
 export const logInSchema = schema.pick({ email: true, password: true })
 export type LogInSchemaType = z.infer<typeof logInSchema>
+
+export const changePasswordSchema = schema
+  .pick({ password: true, newPassword: true })
+  .refine(({ password, newPassword }) => password !== newPassword, {
+    message: 'New password cannot be the same as current password',
+    path: ['newPassword']
+  })
+
+export type ChangePasswordSchemaType = z.infer<typeof changePasswordSchema>
