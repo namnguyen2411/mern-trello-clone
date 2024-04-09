@@ -3,13 +3,20 @@ import { toast } from 'react-toastify'
 import { authRoutes } from 'src/routes'
 import { clearLocalStorage, setProfileToLocalStorage, getAccessTokenFromLocalStorage } from './auth'
 
+let baseURL = ''
+if (import.meta.env.DEV) {
+  baseURL = import.meta.env.VITE_API_DEV_BASE_URL
+} else {
+  baseURL = import.meta.env.VITE_API_PROD_BASE_URL
+}
+
 class Http {
   readonly instance: AxiosInstance
   private access_token: string | null
   constructor() {
     this.access_token = getAccessTokenFromLocalStorage()
     this.instance = axios.create({
-      baseURL: 'http://localhost:8000/api/',
+      baseURL,
       timeout: 10000,
       headers: {
         'Content-Type': 'application/json'
