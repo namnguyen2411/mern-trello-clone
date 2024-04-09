@@ -8,6 +8,7 @@ import { theme } from './theme.ts'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { AuthProvider } from './contexts/authContext.tsx'
+import ErrorBoundary from './components/ErrorBoundary/'
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -38,7 +39,9 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
         <ConfirmProvider defaultOptions={CONFIRM_PROVIDER_DEFAULT_OPTIONS}>
           <CssBaseline />
           <AuthProvider>
-            <App />
+            <ErrorBoundary>
+              <App />
+            </ErrorBoundary>
           </AuthProvider>
           <ReactQueryDevtools initialIsOpen={false} />
         </ConfirmProvider>
