@@ -1,5 +1,5 @@
 import { useContext, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import { Menu as MenuIcon } from '@mui/icons-material'
 import { AppBar, Toolbar, Typography, Box, IconButton, Menu, MenuItem, SvgIcon } from '@mui/material'
 import { ReactComponent as TrelloIcon } from 'src/assets/trello.svg'
@@ -10,6 +10,7 @@ import { accountRoutes } from 'src/routes'
 const pages = ['Profile', 'Security']
 
 function AccountHeader() {
+  const pathName = useLocation().pathname
   const { profile } = useContext(authContext)
   const userId = profile?._id as string
   const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null)
@@ -98,7 +99,7 @@ function AccountHeader() {
           </Link>
         </Box>
 
-        <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' }, gap: 3, ml: 3 }}>
+        <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' }, gap: 4, ml: 4 }}>
           {pages.map((page) => (
             <Link
               to={page === 'Profile' ? accountRoutes.profile : accountRoutes.security}
@@ -106,7 +107,20 @@ function AccountHeader() {
               style={{ textDecoration: 'none' }}
               onClick={handleCloseNavMenu}
             >
-              <Box sx={{ my: 2, color: 'black', display: 'block', fontWeight: '500' }}>{page}</Box>
+              <Box
+                sx={{
+                  my: 2,
+                  display: 'block',
+                  fontWeight: '500',
+                  color: pathName.includes(page.toLowerCase()) ? '#1976d2' : 'black',
+                  borderBottom: pathName.includes(page.toLowerCase()) ? '2px solid #1976d2' : 'none',
+                  ':hover': {
+                    borderBottom: '2px solid lightgray'
+                  }
+                }}
+              >
+                {page}
+              </Box>
             </Link>
           ))}
         </Box>
