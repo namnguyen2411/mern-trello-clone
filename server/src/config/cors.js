@@ -5,9 +5,7 @@ import ApiError from '#src/utils/ApiError.js'
 
 export const corsOptions = {
   origin: function (origin, callback) {
-    // Allow using POSTMAN in dev mode
-    // Often, the origin value is undefined when using POSTMAN
-    if (!origin && env.BUILD_MODE === 'dev') {
+    if (env.BUILD_MODE === 'dev') {
       return callback(null, true)
     }
 

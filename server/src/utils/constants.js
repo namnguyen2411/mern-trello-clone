@@ -18,4 +18,7 @@ export const PASSWORD_RULE = {
   message: 'Your password fails to match the Password pattern!'
 }
 
-export const WHITELIST_DOMAINS = ['http://localhost:5173']
+export const WHITELIST_DOMAINS = [
+  // 'http://localhost:5173',
+  'https://npn-trello.vercel.app'
+]
