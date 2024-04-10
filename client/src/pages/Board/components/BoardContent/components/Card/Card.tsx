@@ -126,6 +126,7 @@ export default function Card({ card }: CardProps) {
   const handleClose = () => {
     setOpenCardId('')
     setOpenEditCardTitle(false)
+    setHoveringCard(false)
     setCardTitle(card.title)
     setCardDescription(card.description)
   }

@@ -1,6 +1,6 @@
 import { useState, MouseEvent, useContext } from 'react'
 import { Logout, AccountCircle } from '@mui/icons-material'
-import { Box, Tooltip, IconButton, Avatar, Menu, MenuItem, Divider, ListItemIcon, useColorScheme } from '@mui/material'
+import { Box, Tooltip, IconButton, Avatar, Menu, MenuItem, Divider, ListItemIcon } from '@mui/material'
 import { Link } from 'react-router-dom'
 import { useMutation } from '@tanstack/react-query'
 import authAPI from 'src/apis/auth.api'
@@ -8,7 +8,6 @@ import authContext from 'src/contexts/authContext'
 import { accountRoutes } from 'src/routes'
 
 export default function Profile() {
-  const { mode } = useColorScheme()
   const { reset, profile } = useContext(authContext)
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
   const open = Boolean(anchorEl)
@@ -18,7 +17,6 @@ export default function Profile() {
     onSuccess: () => {
       setAnchorEl(null)
       reset()
-      localStorage.setItem('prevMode', mode as string)
     }
   })
 

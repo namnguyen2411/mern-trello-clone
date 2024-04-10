@@ -115,7 +115,7 @@ function AccountHeader() {
                   color: pathName.includes(page.toLowerCase()) ? '#1976d2' : 'black',
                   borderBottom: pathName.includes(page.toLowerCase()) ? '2px solid #1976d2' : 'none',
                   ':hover': {
-                    borderBottom: '2px solid lightgray'
+                    borderBottom: pathName.includes(page.toLowerCase()) ? '2px solid #1976d2' : '2px solid gray'
                   }
                 }}
               >

@@ -29,7 +29,8 @@ export default function EditorMenuBar() {
       top='31px'
       left='26px'
       overflow='hidden'
-      borderBottom='1px solid rgb(128, 128, 128)'
+      borderBottom='2px solid grey'
+      borderRadius='2px'
     >
       <Box
         sx={{

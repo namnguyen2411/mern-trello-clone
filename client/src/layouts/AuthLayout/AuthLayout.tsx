@@ -1,11 +1,8 @@
-import { Box, Container, useColorScheme } from '@mui/material'
+import { Box, Container } from '@mui/material'
 import { Outlet } from 'react-router-dom'
 import trellobg from 'src/assets/trellobg.png'
 
 export default function AuthLayout() {
-  const { setMode } = useColorScheme()
-  setMode('light')
-
   return (
     <Container
       disableGutters
@@ -14,7 +11,8 @@ export default function AuthLayout() {
         height: '100vh',
         backgroundImage: `url("${trellobg}")`,
         backgroundRepeat: 'no-repeat',
-        backgroundPosition: 'center'
+        backgroundPosition: 'center',
+        bgcolor: 'white'
       }}
     >
       <Box

@@ -1,27 +1,15 @@
 import { useContext, useState } from 'react'
 import { useMutation } from '@tanstack/react-query'
-import { useForm, Controller } from 'react-hook-form'
+import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Link, useNavigate } from 'react-router-dom'
-import { VisibilityOff, Visibility, Email, Lock } from '@mui/icons-material'
-import {
-  Box,
-  Button,
-  FormControl,
-  FormHelperText,
-  IconButton,
-  Input,
-  InputAdornment,
-  InputLabel,
-  TextField,
-  CircularProgress,
-  Typography
-} from '@mui/material'
+import { Box, Button, CircularProgress, Typography } from '@mui/material'
 import { logInSchema, LogInSchemaType } from 'src/utils/schema'
 import authAPI from 'src/apis/auth.api'
-import { UserType } from 'src/types/user.type'
 import { publicRoutes } from 'src/routes'
 import authContext from 'src/contexts/authContext'
+import EmailField from 'src/components/EmailField'
+import PasswordField from 'src/components/PasswordField'
 
 export default function SignIn() {
   const { setIsAuthenticated, setProfile } = useContext(authContext)
@@ -30,11 +18,11 @@ export default function SignIn() {
 
   const logInMutation = useMutation({
     mutationFn: authAPI.login,
-    onSuccess: (data: UserType) => {
+    onSuccess: (data) => {
       reset()
       setIsAuthenticated(true)
       setProfile(data)
-      navigate(`/u/${data.username ? data.username : data._id}/boards`)
+      navigate(`/u/${data._id}/boards`)
     },
     onError: (error) => {
       setError('email', {
@@ -78,70 +66,37 @@ export default function SignIn() {
           gap: 2,
           boxShadow: 'rgba(0, 0, 0, 0.4) 0px 0px 10px',
           padding: '24px 32px',
-          width: '460px'
+          width: '460px',
+          '& .MuiSvgIcon-root': {
+            color: 'gray'
+          },
+          '& .MuiInputLabel-root': {
+            color: 'gray'
+          },
+          '& .MuiInputBase-root': {
+            borderBottom: '1px solid lightgray',
+            color: 'black',
+            '&:focus-within': {
+              border: 'unset'
+            }
+          }
         }}
       >
         {/* Title */}
-        <Typography variant='h4' textAlign='center' marginBottom={2}>
+        <Typography variant='h4' textAlign='center' marginBottom={2} color='black'>
           Log In
         </Typography>
         {/* Email */}
-        <Box sx={{ display: 'flex', alignItems: 'center' }}>
-          <Email fontSize='medium' sx={{ color: 'action.active', mr: 1, my: 0.5 }} />
-          <TextField
-            {...register('email')}
-            error={!!errors.email}
-            helperText={errors.email?.message}
-            label='Email'
-            variant='standard'
-            color='info'
-            autoComplete='off'
-            fullWidth
-            autoFocus
-            sx={{
-              minHeight: '71px',
-              '& .MuiFormHelperText-root': {
-                fontWeight: '500'
-              }
-            }}
-          />
-        </Box>
+        <EmailField register={register} name='email' errors={errors} />
         {/* Password */}
-        <Box sx={{ display: 'flex', alignItems: 'center' }}>
-          <Lock fontSize='medium' sx={{ color: 'action.active', mr: 1 }} />
-          <FormControl
-            variant='standard'
-            sx={{
-              minHeight: '71px'
-            }}
-            fullWidth
-          >
-            <InputLabel htmlFor='adornment-password' color='info' error={!!errors.password}>
-              Password
-            </InputLabel>
-            <Controller
-              control={control}
-              name='password'
-              render={({ field }) => (
-                <Input
-                  {...field}
-                  error={!!errors.password}
-                  autoComplete='off'
-                  id='adornment-password'
-                  type={showPassword ? 'text' : 'password'}
-                  endAdornment={
-                    <InputAdornment position='end'>
-                      <IconButton onClick={handleClickShowPassword} onMouseDown={handleMouseDownPassword}>
-                        {showPassword ? <VisibilityOff /> : <Visibility />}
-                      </IconButton>
-                    </InputAdornment>
-                  }
-                />
-              )}
-            />
-            <FormHelperText sx={{ color: 'error.main', fontWeight: '500' }}>{errors.password?.message}</FormHelperText>
-          </FormControl>
-        </Box>
+        <PasswordField
+          control={control}
+          name='password'
+          errors={errors}
+          showPassword={showPassword}
+          handleClickShowPassword={handleClickShowPassword}
+          handleMouseDownPassword={handleMouseDownPassword}
+        />
         {/* Log In Button */}
         <Button
           type='submit'
@@ -162,7 +117,7 @@ export default function SignIn() {
         </Button>
         {/* Link to Sign Up */}
         <Box marginTop={1}>
-          <Typography fontWeight='500' textAlign='center' color='primary.main'>
+          <Typography fontWeight='500' textAlign='center' color='primary.dark'>
             New to Trello?
             <Link to={publicRoutes.signup} style={{ color: 'inherit', marginLeft: '5px' }}>
               Create an account
