@@ -15,6 +15,7 @@ const NotFound = lazy(() => import('./pages/NotFound'))
 import { publicRoutes, accountRoutes } from './routes'
 import AuthContext from './contexts/authContext'
 import './App.css'
+import Loading from './components/Loading'
 
 function App() {
   const { isAuthenticated, profile } = useContext(AuthContext)
@@ -29,7 +30,7 @@ function App() {
               isAuthenticated ? (
                 <Navigate to={`/u/${profile?._id}/boards`} />
               ) : (
-                <Suspense>
+                <Suspense fallback={<Loading />}>
                   <LogIn />
                 </Suspense>
               )
@@ -41,7 +42,7 @@ function App() {
               isAuthenticated ? (
                 <Navigate to={`/u/${profile?._id}/boards`} />
               ) : (
-                <Suspense>
+                <Suspense fallback={<Loading />}>
                   <LogIn />
                 </Suspense>
               )
@@ -53,7 +54,7 @@ function App() {
               isAuthenticated ? (
                 <Navigate to={`/u/${profile?._id}/boards`} />
               ) : (
-                <Suspense>
+                <Suspense fallback={<Loading />}>
                   <SignUp />
                 </Suspense>
               )
@@ -66,7 +67,7 @@ function App() {
             path='/u/:userId/boards'
             element={
               isAuthenticated ? (
-                <Suspense>
+                <Suspense fallback={<Loading />}>
                   <User />
                 </Suspense>
               ) : (
@@ -78,7 +79,7 @@ function App() {
             path='/b/:boardId/:slug'
             element={
               isAuthenticated ? (
-                <Suspense>
+                <Suspense fallback={<Loading />}>
                   <Board />
                 </Suspense>
               ) : (
@@ -93,7 +94,7 @@ function App() {
             path={accountRoutes.profile}
             element={
               isAuthenticated ? (
-                <Suspense>
+                <Suspense fallback={<Loading />}>
                   <Profile />
                 </Suspense>
               ) : (
@@ -105,7 +106,7 @@ function App() {
             path={accountRoutes.security}
             element={
               isAuthenticated ? (
-                <Suspense>
+                <Suspense fallback={<Loading />}>
                   <Security />
                 </Suspense>
               ) : (
@@ -117,7 +118,7 @@ function App() {
         <Route
           path='*'
           element={
-            <Suspense>
+            <Suspense fallback={<Loading />}>
               <NotFound />
             </Suspense>
           }
