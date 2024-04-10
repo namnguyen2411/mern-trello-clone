@@ -1,5 +1,6 @@
 import { useContext } from 'react'
 import { Box, Container } from '@mui/material'
+import { Helmet } from 'react-helmet-async'
 import SideBar from './components/SideBar'
 import YourBoards from './components/YourBoards'
 import StarredBoards from './components/StarredBoards'
@@ -18,6 +19,10 @@ export default function User() {
 
   return (
     <Container maxWidth='lg'>
+      <Helmet>
+        <title>Boards | Trello</title>
+        <meta name='description' content='Boards page' />
+      </Helmet>
       <Box marginTop={5} display='flex' gap={6} flexWrap={'nowrap'}>
         <SideBar />
         <Box display='flex' flexDirection='column' rowGap={6}>

@@ -4,6 +4,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Link, useNavigate } from 'react-router-dom'
 import { Box, Button, CircularProgress, Typography } from '@mui/material'
+import { Helmet } from 'react-helmet-async'
 import { signUpSchemaRefined, SignUpSchemaType } from 'src/utils/schema'
 import authAPI from 'src/apis/auth.api'
 import { publicRoutes } from 'src/routes'
@@ -71,6 +72,10 @@ export default function SignUp() {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
+      <Helmet>
+        <title>Create an account | Trello</title>
+        <meta name='description' content={'Create an account'} />
+      </Helmet>
       <Box
         sx={{
           display: 'flex',
@@ -132,7 +137,11 @@ export default function SignUp() {
             fontSize: '1rem',
             display: 'flex',
             alignItems: 'center',
-            gap: 2
+            gap: 2,
+            '&:disabled': {
+              color: 'black',
+              bgcolor: (theme) => theme.palette.success.main
+            }
           }}
         >
           {signUpMutation.isPending && <CircularProgress color='inherit' size={16} />}

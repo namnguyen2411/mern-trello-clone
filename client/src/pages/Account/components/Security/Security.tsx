@@ -14,6 +14,7 @@ import {
   OutlinedInput,
   Typography
 } from '@mui/material'
+import { Helmet } from 'react-helmet-async'
 import { changePasswordSchema, ChangePasswordSchemaType } from 'src/utils/schema'
 import userAPI from 'src/apis/user.api'
 import authContext from 'src/contexts/authContext'
@@ -87,6 +88,10 @@ export default function Security() {
 
   return (
     <Box display='flex' justifyContent='center'>
+      <Helmet>
+        <title>Security | Trello</title>
+        <meta name='description' content='Security page' />
+      </Helmet>
       <Box width={'584px'}>
         <Typography variant='h5' color='black' mt={4} fontWeight='500'>
           Security

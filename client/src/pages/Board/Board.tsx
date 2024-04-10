@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
 import { useLocation, useParams } from 'react-router-dom'
+import { Helmet } from 'react-helmet-async'
 import BoardBar from './components/BoardBar'
 import BoardContent from './components/BoardContent'
 import boardAPI from 'src/apis/board.api'
@@ -32,6 +33,10 @@ export default function Board() {
   if (!boardData) return null
   return (
     <>
+      <Helmet>
+        <title>{boardData.title} | Trello</title>
+        <meta name='description' content="User's boards" />
+      </Helmet>
       <BoardBar
         boardTitle={boardData.title}
         boardType={boardData.type}

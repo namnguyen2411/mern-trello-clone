@@ -3,6 +3,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'react-toastify'
 import { Box, TextField, BoxProps, Divider, Typography } from '@mui/material'
 import { Check, Close } from '@mui/icons-material'
+import { Helmet } from 'react-helmet-async'
 import AuthContext from 'src/contexts/authContext'
 import userAPI from 'src/apis/user.api'
 import { UserType } from 'src/types/user.type'
@@ -125,6 +126,10 @@ export default function Profile({}: ProfileProps) {
 
   return (
     <Box display='flex' justifyContent='center'>
+      <Helmet>
+        <title>Profile | Trello</title>
+        <meta name='description' content='Profile page' />
+      </Helmet>
       <Box>
         <Typography variant='h5' color='black' mt={4} fontWeight='500'>
           Profile
