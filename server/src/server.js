@@ -6,12 +6,15 @@ import env from './config/environment.js'
 import { connectDB, getDB } from './config/db.js'
 import apiRoutes from './routes/index.js'
 import errorHandling from './middlewares/errorHandling.js'
+import { job } from './config/cron.js'
 
 const app = express()
 
 const startServer = () => {
   app.use(express.json())
   app.use(cors(corsOptions))
+
+  job.start()
 
   app.get('/', (req, res) => {
     res.send(`<h1>Hello World!</h1>`)

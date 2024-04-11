@@ -5,7 +5,10 @@ const env = {
   BUILD_MODE: process.env.BUILD_MODE,
   MONGODB_URI: process.env.MONGODB_URI,
   DB_NAME: process.env.DB_NAME,
-  JWT_SECRET: process.env.JWT_SECRET
+  JWT_SECRET: process.env.JWT_SECRET,
+  SERVER_URL: process.env.SERVER_URL,
+  EMAILJS_SERVICE_ID: process.env.EMAILJS_SERVICE_ID,
+  EMAILJS_TEMPLATE_ID: process.env.EMAILJS_TEMPLATE_ID
 }
 
 export default env
