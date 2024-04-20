@@ -10,7 +10,7 @@ const createNew = async (data) => {
   }
 
   const newUserId = await userModel.createNew(data)
-  const access_token = jwt.sign({ _id: newUserId }, env.JWT_SECRET, { expiresIn: '3d' })
+  const access_token = jwt.sign({ _id: newUserId.insertedId }, env.JWT_SECRET, { expiresIn: '3d' })
   const result = await userModel.findOneById(newUserId.insertedId)
   delete result.password
 
@@ -31,7 +31,7 @@ const login = async (data) => {
   if (!existedUser || existedUser.password !== data.password)
     throw new ApiError(StatusCodes.UNPROCESSABLE_ENTITY, 'Email or password is incorrect')
 
-  const access_token = jwt.sign({ _id: existedUser._id }, env.JWT_SECRET, { expiresIn: '1d' })
+  const access_token = jwt.sign({ _id: existedUser._id }, env.JWT_SECRET, { expiresIn: '3d' })
 
   delete existedUser.password
   return { ...existedUser, access_token }
